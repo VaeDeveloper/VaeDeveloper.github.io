@@ -15,7 +15,7 @@
     }
 
     .container {
-      max-width: 960px;
+      max-width: 1200px;
       margin: 0 auto;
       padding: 40px 20px;
     }
@@ -23,15 +23,20 @@
     h1 {
       text-align: center;
       font-size: 2.5em;
-      margin-bottom: 1.5em;
+      margin-bottom: 2em;
       color: #00ffff;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
     }
 
     .project {
       background-color: #1a1a1a;
       border-radius: 12px;
       padding: 20px;
-      margin-bottom: 40px;
       box-shadow: 0 0 10px rgba(0,255,255,0.1);
     }
 
@@ -85,53 +90,54 @@
 <body>
   <div class="container">
     <h1>Personal Projects</h1>
-
-    <div class="project">
-      <img src="NoiseGenerator.jpg" alt="Noise Generator" />
-      <h2>NoiseGenerator</h2>
-      <p>
-        An interactive C++ desktop application for generating and visualizing procedural 2D noise with customizable parameters, real-time preview rendering, and flexible preset management.
-      </p>
-      <div class="buttons">
-        <a href="https://github.com/VaeDeveloper/NoiseGenerator" class="button" target="_blank">GitHub</a>
-        <a href="https://github.com/VaeDeveloper/NoiseGenerator/releases" class="button" target="_blank">Download</a>
+    <div class="grid">
+      <div class="project">
+        <img src="NoiseGenerator.jpg" alt="Noise Generator" />
+        <h2>NoiseGenerator</h2>
+        <p>
+          An interactive C++ desktop application for generating and visualizing procedural 2D noise with customizable parameters, real-time preview rendering, and flexible preset management.
+        </p>
+        <div class="buttons">
+          <a href="https://github.com/VaeDeveloper/NoiseGenerator" class="button" target="_blank">GitHub</a>
+          <a href="https://github.com/VaeDeveloper/NoiseGenerator/releases" class="button" target="_blank">Download</a>
+        </div>
       </div>
-    </div>
 
-    <div class="project">
-      <img src="ORMTool.jpg" alt="ORMTool" />
-      <h2>ORMTool</h2>
-      <p>
-        ORMTool is a lightweight C++ desktop application that generates ORM (Occlusion-Roughness-Metallic) texture maps by combining separate grayscale images. It provides real-time previews, supports both Unreal Engine and Unity formats, and uses a modern GUI built with Dear ImGui.
-      </p>
-      <div class="buttons">
-        <a href="https://github.com/VaeDeveloper/ORMTool" class="button" target="_blank">GitHub</a>
-        <a href="https://github.com/VaeDeveloper/ORMTool/releases" class="button" target="_blank">Download</a>
+      <div class="project">
+        <img src="ORMTool.jpg" alt="ORMTool" />
+        <h2>ORMTool</h2>
+        <p>
+          ORMTool is a lightweight C++ desktop application that generates ORM (Occlusion-Roughness-Metallic) texture maps by combining separate grayscale images. It provides real-time previews, supports both Unreal Engine and Unity formats, and uses a modern GUI built with Dear ImGui.
+        </p>
+        <div class="buttons">
+          <a href="https://github.com/VaeDeveloper/ORMTool" class="button" target="_blank">GitHub</a>
+          <a href="https://github.com/VaeDeveloper/ORMTool/releases" class="button" target="_blank">Download</a>
+        </div>
       </div>
-    </div>
 
-    <div class="project">
-      <img src="ValidatorX.jpg" alt="ValidatorX" />
-      <h2>ValidatorX</h2>
-      <p>
-        ValidatorX is a modular plugin for Unreal Engine that automatically detects issues in Blueprints and helps maintain clean, performant, and error-free graphs.
-      </p>
-      <div class="buttons">
-        <a href="https://github.com/VaeDeveloper/ValidatorX" class="button" target="_blank">GitHub</a>
+      <div class="project">
+        <img src="ValidatorX.jpg" alt="ValidatorX" />
+        <h2>ValidatorX</h2>
+        <p>
+          ValidatorX is a modular plugin for Unreal Engine that automatically detects issues in Blueprints and helps maintain clean, performant, and error-free graphs.
+        </p>
+        <div class="buttons">
+          <a href="https://github.com/VaeDeveloper/ValidatorX" class="button" target="_blank">GitHub</a>
+          <a href="https://github.com/VaeDeveloper/ValidatorX/releases/tag/ValidatorX" class="button" target="_blank">Download</a>
+        </div>
       </div>
-    </div>
 
-    <div class="project">
-      <img src="ToolsProject.jpg" alt="Tools Project" />
-      <h2>ToolsProject</h2>
-      <p>
-        A collection of powerful editor tools for Unreal Engine, built entirely with Slate. This project brings together several tools to improve content management, validation, and workflow efficiency inside the Unreal Editor.
-      </p>
-      <div class="buttons">
-        <a href="https://github.com/VaeDeveloper/ToolsProject" class="button" target="_blank">GitHub</a>
+      <div class="project">
+        <img src="ToolsProject.jpg" alt="Tools Project" />
+        <h2>ToolsProject</h2>
+        <p>
+          A collection of powerful editor tools for Unreal Engine, built entirely with Slate. This project brings together several tools to improve content management, validation, and workflow efficiency inside the Unreal Editor.
+        </p>
+        <div class="buttons">
+          <a href="https://github.com/VaeDeveloper/ToolsProject" class="button" target="_blank">GitHub</a>
+        </div>
       </div>
     </div>
   </div>
 </body>
 </html>
-
