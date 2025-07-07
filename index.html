@@ -63,7 +63,7 @@
 
   <div class="nav">
     <a href="#bio">Bio</a>
-    <a href="#projects">Project</a>
+    <a href="projects.html">Project</a>
     <a href="#contact">Contact</a>
   </div>
 
@@ -317,7 +317,7 @@ function createNodes() {
         }
       });
 
-      // Отскок от кнопок навигации
+     
       const navLinks = document.querySelectorAll('.nav a');
       const linkRects = Array.from(navLinks).map(link => link.getBoundingClientRect());
 
@@ -365,24 +365,24 @@ function animateChar(i) {
       index = 0;
       displayText.fill(' ');
       animateChar(0);
-    }, 3000);
+    }, 4000);
     return;
   }
 
   let iterations = 0;
-  const maxIterations = 15; // сколько раз менять символ перед фиксацией
+  const maxIterations = 15; 
 
   function frame() {
     if (iterations < maxIterations) {
       displayText[i] = randomChar();
       signatureElem.textContent = displayText.join('');
       iterations++;
-      setTimeout(frame, 50); // скорость перебора символов
+      setTimeout(frame, 75);
     } else {
-      // Зафиксировать правильный символ
+     
       displayText[i] = signatureText[i];
       signatureElem.textContent = displayText.join('');
-      animateChar(i + 1); // перейти к следующему символу
+      animateChar(i + 1); 
     }
   }
 
