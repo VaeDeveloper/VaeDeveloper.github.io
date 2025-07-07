@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>VaeDeveloper Projects</title>
-  <meta name="description" content="Project portfolio by VaeDeveloper" />
+  <title>VaeDeveloper Portfolio</title>
+  <meta name="description" content="Project portfolio and bio of VaeDeveloper" />
   <style>
     html, body {
       margin: 0;
@@ -11,23 +11,56 @@
       color: #cccccc;
       font-family: 'Segoe UI', Tahoma, sans-serif;
       height: 100%;
+      user-select: none;
     }
 
     .container {
       max-width: 1400px;
       margin: 0 auto;
-      padding: 60px 40px;
+      padding: 40px 40px 80px;
+    }
+
+    /* Вкладки */
+    .tabs {
+      position: fixed;
+      top: 20px;
+      right: 40px;
+      display: flex;
+      gap: 20px;
+      z-index: 10;
+    }
+
+    .tab {
+      cursor: pointer;
+      padding: 10px 20px;
+      border-radius: 8px;
+      background-color: #1a1a1a;
+      color: #aaa;
+      font-weight: 600;
+      transition: background-color 0.3s, color 0.3s;
       user-select: none;
     }
 
-    h1 {
-      text-align: center;
-      font-size: 3em;
-      margin-bottom: 2em;
-      color: #aaaaaa;
-      user-select: none;
+    .tab.active {
+      background-color: #333333;
+      color: #00cccc;
+      box-shadow: 0 0 10px #00cccc;
     }
 
+    /* Контент */
+    .content {
+      margin-top: 20px;
+    }
+
+    .content-section {
+      display: none;
+    }
+
+    .content-section.active {
+      display: block;
+    }
+
+    /* Проекты */
     .grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -102,10 +135,47 @@
       background-color: #555555;
     }
 
+    /* Bio */
+    .bio {
+      max-width: 700px;
+      margin: 0 auto;
+      color: #aaa;
+      line-height: 1.6;
+      font-size: 1.1em;
+    }
+
+    .bio h2 {
+      color: #00cccc;
+      margin-bottom: 15px;
+    }
+
+    .contact-links {
+      margin-top: 25px;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    .contact-links a {
+      color: #00cccc;
+      text-decoration: none;
+      font-weight: 600;
+      border: 1px solid #00cccc;
+      padding: 8px 14px;
+      border-radius: 6px;
+      transition: background-color 0.3s;
+    }
+
+    .contact-links a:hover {
+      background-color: #00cccc;
+      color: #111;
+    }
+
+    /* Footer */
     .footer {
       max-width: 1400px;
-      margin: 0 auto;
-      padding: 30px 40px 80px;
+      margin: 40px auto 20px;
+      padding: 0 40px;
       text-align: left;
       border-top: 1px solid #222;
       font-size: 1em;
@@ -126,53 +196,77 @@
   </style>
 </head>
 <body>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="projects">Projects</div>
+    <div class="tab" data-tab="bio">Bio</div>
+  </div>
+
   <div class="container">
-    <h1>Personal Projects</h1>
-    <div class="grid">
-      <div class="project">
-        <h2>NoiseGenerator</h2>
-        <img src="NoiseGenerator.jpg" alt="Noise Generator" />
-        <p>
-          An interactive C++ desktop application for generating and visualizing procedural 2D noise with customizable parameters, real-time preview rendering, and flexible preset management.
-        </p>
-        <div class="buttons">
-          <a href="https://github.com/VaeDeveloper/NoiseGenerator" class="button" target="_blank" rel="noopener noreferrer">GitHub</a>
-          <a href="https://github.com/VaeDeveloper/NoiseGenerator/releases" class="button" target="_blank" rel="noopener noreferrer">Download</a>
+    <div id="projects" class="content-section active">
+      <div class="grid">
+        <div class="project">
+          <h2>NoiseGenerator</h2>
+          <img src="NoiseGenerator.jpg" alt="Noise Generator" />
+          <p>
+            An interactive C++ desktop application for generating and visualizing procedural 2D noise with customizable parameters, real-time preview rendering, and flexible preset management.
+          </p>
+          <div class="buttons">
+            <a href="https://github.com/VaeDeveloper/NoiseGenerator" class="button" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a href="https://github.com/VaeDeveloper/NoiseGenerator/releases" class="button" target="_blank" rel="noopener noreferrer">Download</a>
+          </div>
+        </div>
+
+        <div class="project">
+          <h2>ORMTool</h2>
+          <img src="ORMTool.jpg" alt="ORMTool" />
+          <p>
+            ORMTool is a lightweight C++ desktop application that generates ORM (Occlusion-Roughness-Metallic) texture maps by combining separate grayscale images. It provides real-time previews, supports both Unreal Engine and Unity formats, and uses a modern GUI built with Dear ImGui.
+          </p>
+          <div class="buttons">
+            <a href="https://github.com/VaeDeveloper/ORMTool" class="button" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a href="https://github.com/VaeDeveloper/ORMTool/releases" class="button" target="_blank" rel="noopener noreferrer">Download</a>
+          </div>
+        </div>
+
+        <div class="project">
+          <h2>ValidatorX</h2>
+          <img src="ValidatorX.jpg" alt="ValidatorX" />
+          <p>
+            ValidatorX is a modular plugin for Unreal Engine that automatically detects issues in Blueprints and helps maintain clean, performant, and error-free graphs.
+          </p>
+          <div class="buttons">
+            <a href="https://github.com/VaeDeveloper/ValidatorX" class="button" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a href="https://github.com/VaeDeveloper/ValidatorX/releases/tag/ValidatorX" class="button" target="_blank" rel="noopener noreferrer">Download</a>
+          </div>
+        </div>
+
+        <div class="project">
+          <h2>ToolsProject</h2>
+          <img src="ToolsProject.jpg" alt="Tools Project" />
+          <p>
+            A collection of powerful editor tools for Unreal Engine, built entirely with Slate. This project brings together several tools to improve content management, validation, and workflow efficiency inside the Unreal Editor.
+          </p>
+          <div class="buttons">
+            <a href="https://github.com/VaeDeveloper/ToolsProject" class="button" target="_blank" rel="noopener noreferrer">GitHub</a>
+          </div>
         </div>
       </div>
+    </div>
 
-      <div class="project">
-        <h2>ORMTool</h2>
-        <img src="ORMTool.jpg" alt="ORMTool" />
+    <div id="bio" class="content-section">
+      <div class="bio">
+        <h2>About Me</h2>
         <p>
-          ORMTool is a lightweight C++ desktop application that generates ORM (Occlusion-Roughness-Metallic) texture maps by combining separate grayscale images. It provides real-time previews, supports both Unreal Engine and Unity formats, and uses a modern GUI built with Dear ImGui.
+          Hi, I’m VaeDeveloper — a passionate programmer and game developer. I specialize in C++ and Unreal Engine tools. I love building efficient editor utilities and plugins that improve workflow and creativity.
         </p>
-        <div class="buttons">
-          <a href="https://github.com/VaeDeveloper/ORMTool" class="button" target="_blank" rel="noopener noreferrer">GitHub</a>
-          <a href="https://github.com/VaeDeveloper/ORMTool/releases" class="button" target="_blank" rel="noopener noreferrer">Download</a>
-        </div>
-      </div>
 
-      <div class="project">
-        <h2>ValidatorX</h2>
-        <img src="ValidatorX.jpg" alt="ValidatorX" />
-        <p>
-          ValidatorX is a modular plugin for Unreal Engine that automatically detects issues in Blueprints and helps maintain clean, performant, and error-free graphs.
-        </p>
-        <div class="buttons">
-          <a href="https://github.com/VaeDeveloper/ValidatorX" class="button" target="_blank" rel="noopener noreferrer">GitHub</a>
-          <a href="https://github.com/VaeDeveloper/ValidatorX/releases/tag/ValidatorX" class="button" target="_blank" rel="noopener noreferrer">Download</a>
-        </div>
-      </div>
-
-      <div class="project">
-        <h2>ToolsProject</h2>
-        <img src="ToolsProject.jpg" alt="Tools Project" />
-        <p>
-          A collection of powerful editor tools for Unreal Engine, built entirely with Slate. This project brings together several tools to improve content management, validation, and workflow efficiency inside the Unreal Editor.
-        </p>
-        <div class="buttons">
-          <a href="https://github.com/VaeDeveloper/ToolsProject" class="button" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <h2>Contact</h2>
+        <div class="contact-links">
+          <a href="mailto:youremail@example.com" target="_blank" rel="noopener noreferrer">Email</a>
+          <a href="https://www.youtube.com/channel/yourchannel" target="_blank" rel="noopener noreferrer">YouTube</a>
+          <a href="https://github.com/VaeDeveloper" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a href="https://www.linkedin.com/in/yourprofile" target="_blank" rel="noopener noreferrer">LinkedIn</a>
         </div>
       </div>
     </div>
@@ -183,5 +277,25 @@
     <a href="https://github.com/VaeDeveloper" target="_blank" rel="noopener noreferrer">GitHub Profile</a> ·
     <a href="https://www.reddit.com/user/dalexdeb/submitted/" target="_blank" rel="noopener noreferrer">Reddit</a>
   </div>
+
+  <script>
+    const tabs = document.querySelectorAll('.tab');
+    const sections = document.querySelectorAll('.content-section');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        // Активная вкладка
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        // Показать соотв. секцию
+        const target = tab.getAttribute('data-tab');
+        sections.forEach(section => {
+          section.classList.toggle('active', section.id === target);
+        });
+      });
+    });
+  </script>
+
 </body>
 </html>
