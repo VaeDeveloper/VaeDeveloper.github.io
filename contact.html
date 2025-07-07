@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <title>Node Editor</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- Подключаем стили Drawflow -->
   <link rel="stylesheet" href="https://unpkg.com/drawflow/dist/drawflow.min.css" />
   <style>
     body, html {
@@ -24,18 +23,28 @@
 <body>
   <div id="drawflow"></div>
 
-  <!-- Подключаем Drawflow -->
   <script src="https://unpkg.com/drawflow/dist/drawflow.min.js"></script>
   <script>
     const editor = new Drawflow(document.getElementById('drawflow'));
     editor.start();
 
-    // Добавим пару примитивных нод для примера:
-    editor.addNode('Hello Node', 1, 1, 100, 100, 'node_1', {}, `<div style="padding:10px; color:#00ffff;">Hello World</div>`, 'output_1', 'input_1');
-    editor.addNode('Another Node', 1, 1, 400, 100, 'node_2', {}, `<div style="padding:10px; color:#00ffff;">Another Node</div>`, 'output_2', 'input_2');
+    // Добавляем две ноды вручную с id и параметрами
+    editor.addNode('Hello Node', 1, 1, 100, 100, 'node_1', {}, `
+      <div style="padding:10px; color:#00ffff;">
+        Hello World
+        <div class="output" data-output="output_1"></div>
+      </div>
+    `);
 
-    // Связь нод для примера
-    editor.addConnection('node_1', 'output_1', 'node_2', 'input_2');
+    editor.addNode('Another Node', 1, 1, 400, 100, 'node_2', {}, `
+      <div style="padding:10px; color:#00ffff;">
+        Another Node
+        <div class="input" data-input="input_1"></div>
+      </div>
+    `);
+
+    // Создаем соединение вручную
+    editor.addConnection('node_1', 'output_1', 'node_2', 'input_1');
   </script>
 </body>
 </html>
