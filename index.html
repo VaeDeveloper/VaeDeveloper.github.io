@@ -16,39 +16,43 @@
 
   .container {
     max-width: 1400px;
+    min-width: 700px;
     margin: 140px auto 0;
     padding: 40px 40px 80px;
     user-select: none;
+    min-height: 600px;
+    box-sizing: border-box;
   }
 
-  /* Обертка для арт и вкладок */
+  /* Контейнер для табов и арта */
   .tabs-wrapper {
-    position: relative;
-    margin-bottom: 40px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    width: 260px; /* ширина под арт и вкладки */
-    user-select: none;
+    position: fixed;
+    top: 160px; /* подвинул ниже, чтобы совпадало с верхом NoiseGenerator */
+    left: 15%;
+    transform: translateX(-50%);
+    width: 260px;
+    z-index: 20;
   }
 
+  /* Канвас - фон как у страницы, плюс свечение при наведении */
   #art-container {
     width: 260px;
     height: 260px;
-    background-color: #111111;
+    background-color: #111111; /* фон страницы */
+    border-radius: 0;
+    box-shadow: none;
     user-select: none;
     transition: box-shadow 0.3s ease;
   }
   #art-container:hover {
-    box-shadow: 0 0 10px 2px rgba(200, 200, 200, 0.3);
+    box-shadow: 0 0 10px 2px rgba(200, 200, 200, 0.3); /* лёгкое серое свечение */
   }
 
   .tabs {
-    margin-top: 15px;
     display: flex;
     gap: 20px;
     justify-content: flex-start;
-    width: 100%;
+    margin-top: 10px;
   }
 
   .tab {
@@ -82,16 +86,6 @@
   @media (max-width: 1000px) {
     .grid {
       grid-template-columns: 1fr;
-    }
-    .tabs-wrapper {
-      width: 100%;
-      flex-direction: row;
-      align-items: center;
-      justify-content: center;
-      gap: 40px;
-    }
-    #art-container {
-      display: none;
     }
   }
 
@@ -159,6 +153,7 @@
 
   .content {
     display: none;
+    min-height: 600px;
   }
   .content.active {
     display: block;
@@ -175,19 +170,17 @@
 </head>
 <body>
 
-  <div class="container">
-
-    <div class="tabs-wrapper">
-      <div id="art-container">
-        <canvas id="generative-art" width="260" height="260"></canvas>
-      </div>
-
-      <div class="tabs">
-        <div class="tab active" data-tab="projects">Projects</div>
-        <div class="tab" data-tab="bio">Bio</div>
-      </div>
+  <div class="tabs-wrapper">
+    <div id="art-container">
+      <canvas id="generative-art" width="260" height="260"></canvas>
     </div>
+    <div class="tabs">
+      <div class="tab active" data-tab="projects">Projects</div>
+      <div class="tab" data-tab="bio">Bio</div>
+    </div>
+  </div>
 
+  <div class="container">
     <div id="projects" class="content active">
       <div class="grid">
         <div class="project">
@@ -250,7 +243,6 @@
   </div>
 
 <script>
-  // Tabs switching
   const tabs = document.querySelectorAll('.tab');
   const projectsSection = document.getElementById('projects');
   const bioSection = document.getElementById('bio');
@@ -270,36 +262,51 @@
     });
   });
 
-  // Generative art on canvas
+  // Генеративный арт с рандомными линиями в круге
   const canvas = document.getElementById('generative-art');
   const ctx = canvas.getContext('2d');
+  const W = canvas.width;
+  const H = canvas.height;
 
-  function random(min, max) {
-    return Math.random() * (max - min) + min;
+  // Очистка и фон
+  ctx.fillStyle = '#111111'; // фон страницы
+  ctx.fillRect(0, 0, W, H);
+
+  // Рисуем большой круг границы
+  const centerX = W / 2;
+  const centerY = H / 2;
+  const radius = W / 2 - 1;
+
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+  ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  // Функция генерации случайной точки внутри круга
+  function randomPointInCircle(cx, cy, r) {
+    let x, y;
+    do {
+      x = Math.random() * (r * 2) - r;
+      y = Math.random() * (r * 2) - r;
+    } while (x * x + y * y > r * r);
+    return { x: cx + x, y: cy + y };
   }
 
-  function drawArt() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = 'rgba(0, 204, 204, 0.7)';
-    ctx.lineWidth = 2;
+  // Рисуем линии
+  const linesCount = 800; // Кол-во линий
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+  ctx.lineWidth = 0.5;
 
-    // Нарисуем 80 случайных линий с разным углом и длиной
-    for (let i = 0; i < 80; i++) {
-      ctx.beginPath();
-      const x1 = random(0, canvas.width);
-      const y1 = random(0, canvas.height);
-      const length = random(30, 150);
-      const angle = random(0, Math.PI * 2);
-      const x2 = x1 + length * Math.cos(angle);
-      const y2 = y1 + length * Math.sin(angle);
-      ctx.moveTo(x1, y1);
-      ctx.lineTo(x2, y2);
-      ctx.stroke();
-    }
+  for (let i = 0; i < linesCount; i++) {
+    const p1 = randomPointInCircle(centerX, centerY, radius);
+    const p2 = randomPointInCircle(centerX, centerY, radius);
+
+    ctx.beginPath();
+    ctx.moveTo(p1.x, p1.y);
+    ctx.lineTo(p2.x, p2.y);
+    ctx.stroke();
   }
-
-  drawArt();
-
 </script>
 
 </body>
