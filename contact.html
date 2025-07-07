@@ -1,106 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Drawflow example — UE-style nodes</title>
-
-  <!-- Подключаем стили Drawflow -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/drawflow/dist/drawflow.min.css" />
-
-  <style>
-    body, html {
-      margin: 0; height: 100%; overflow: hidden;
-      background-color: #111;
-      font-family: 'Segoe UI', Tahoma, sans-serif;
-      color: #eee;
-    }
-    #drawflow {
-      width: 100vw;
-      height: 100vh;
-      background: #222;
-    }
-    .drawflow-node {
-      background: #333 !important;
-      border: 2px solid #00ffff !important;
-      border-radius: 6px !important;
-      color: #ccc !important;
-      font-weight: bold;
-      user-select: none;
-    }
-    .drawflow-node .title {
-      color: #00ffff !important;
-      border-bottom: 1px solid #00ffff !important;
-    }
-  </style>
+<meta charset="UTF-8" />
+<title>Шифровальная головоломка Цезаря</title>
+<style>
+  body {
+    background: #111;
+    color: #00ffff;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    user-select: none;
+  }
+  .container {
+    background: #222;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px #00ffffaa;
+    max-width: 450px;
+    text-align: center;
+  }
+  input[type="number"] {
+    width: 80px;
+    font-size: 1.2em;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #00cccc;
+    background: #111;
+    color: #00ffff;
+    margin-top: 15px;
+  }
+  button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background: #00cccc;
+    border: none;
+    border-radius: 6px;
+    color: #111;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  button:hover {
+    background: #009999;
+  }
+  .message {
+    margin-top: 25px;
+    font-size: 1.2em;
+    min-height: 2em;
+  }
+  .decrypted {
+    margin-top: 15px;
+    font-weight: bold;
+    color: #aaffaa;
+  }
+</style>
 </head>
 <body>
+  <div class="container">
+    <h1>Шифровальная головоломка Цезаря</h1>
+    <p>Расшифруйте сообщение, введя правильный ключ сдвига (число от 1 до 25):</p>
+    <div id="encrypted" style="font-size:1.3em; letter-spacing: 2px; user-select: text;"></div>
+    <input type="number" id="keyInput" min="1" max="25" placeholder="Ключ" />
+    <br />
+    <button id="decryptBtn">Расшифровать</button>
+    <div class="message" id="resultMessage"></div>
+    <div class="decrypted" id="decryptedText"></div>
+  </div>
 
-  <div id="drawflow"></div>
-
-  <!-- Подключаем скрипт Drawflow -->
-  <script src="https://cdn.jsdelivr.net/npm/drawflow/dist/drawflow.min.js"></script>
   <script>
-    // Инициализируем Drawflow
-    const container = document.getElementById('drawflow');
-    const editor = new Drawflow(container);
+    // Исходное сообщение и ключ
+    const secretKey = 7; // скрытый ключ
+    const originalText = "HELLO, VaeDeveloper! THIS IS A CAESAR CIPHER PUZZLE.";
+    
+    // Функция шифрования Цезаря (сдвиг)
+    function caesarShift(str, shift) {
+      return str.split('').map(char => {
+        const code = char.charCodeAt(0);
+        if (code >= 65 && code <= 90) { // A-Z
+          return String.fromCharCode(((code - 65 + shift + 26) % 26) + 65);
+        } else if (code >= 97 && code <= 122) { // a-z
+          return String.fromCharCode(((code - 97 + shift + 26) % 26) + 97);
+        } else {
+          return char;
+        }
+      }).join('');
+    }
+    
+    // Зашифрованный текст
+    const encryptedText = caesarShift(originalText, secretKey);
+    document.getElementById('encrypted').textContent = encryptedText;
+    
+    const decryptBtn = document.getElementById('decryptBtn');
+    const keyInput = document.getElementById('keyInput');
+    const resultMessage = document.getElementById('resultMessage');
+    const decryptedText = document.getElementById('decryptedText');
 
-    editor.reroute = true; // Включаем возможность добавлять точки соединений (рутеры)
-    editor.start();
-
-    // Добавим несколько нод, имитирующих UE стиль (заголовок + входы/выходы)
-
-    // Добавление ноды — параметры: модуль (здесь "Home"), ID ноды, координаты X/Y, HTML содержимое, входы, выходы
-    editor.addNode(
-      'Add',               // имя ноды
-      1,                   // ID
-      100, 100,            // позиция X, Y
-      `<div class="title">Add</div>
-       <div>Input A</div>
-       <div>Input B</div>
-       <div>Output Result</div>`,   // содержимое ноды (HTML)
-      2, // количество входов
-      1  // количество выходов
-    );
-
-    editor.addNode(
-      'Multiply',
-      2,
-      400, 150,
-      `<div class="title">Multiply</div>
-       <div>Input X</div>
-       <div>Input Y</div>
-       <div>Output Product</div>`,
-      2,
-      1
-    );
-
-    editor.addNode(
-      'Output',
-      3,
-      700, 100,
-      `<div class="title">Output</div>
-       <div>Input Value</div>`,
-      1,
-      0
-    );
-
-    // Соединим ноды: из Add -> Multiply -> Output
-    editor.addConnection('Add', 'output_1', 'Multiply', 'input_1');
-    editor.addConnection('Multiply', 'output_1', 'Output', 'input_1');
-
-    // Обработка событий для логов в консоль (или сюда можно добавить вывод в лог-окно)
-    editor.on('connectionCreated', function(info) {
-      console.log('Связь создана:', info);
-    });
-
-    editor.on('nodeCreated', function(id) {
-      console.log('Нода создана с ID:', id);
-    });
-
-    editor.on('connectionRemoved', function(info) {
-      console.log('Связь удалена:', info);
-    });
-
+    decryptBtn.onclick = () => {
+      const userKey = parseInt(keyInput.value, 10);
+      if (isNaN(userKey) || userKey < 1 || userKey > 25) {
+        resultMessage.textContent = "Введите число от 1 до 25.";
+        decryptedText.textContent = "";
+        return;
+      }
+      if (userKey === secretKey) {
+        resultMessage.textContent = "Правильно! Вот расшифрованное сообщение:";
+        const decrypted = caesarShift(encryptedText, -userKey);
+        decryptedText.textContent = decrypted;
+      } else {
+        resultMessage.textContent = "Неверный ключ. Попробуйте еще.";
+        decryptedText.textContent = "";
+      }
+    };
   </script>
 </body>
 </html>
