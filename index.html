@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Generative Mesh</title>
+  <title>Generative Mesh (Smooth)</title>
   <style>
     html, body {
       margin: 0;
@@ -12,7 +12,6 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      font-family: sans-serif;
     }
     canvas {
       display: block;
@@ -44,12 +43,12 @@
     const h = canvas.height;
     const center = { x: w / 2, y: h / 2 };
     const radius = w * 0.45;
-    const pointsCount = 360;
+    const pointsCount = 300;
     const points = [];
 
     let mouseInfluence = 0.5;
+    let connections = [];
 
-    // генерируем точки по кругу
     for (let i = 0; i < pointsCount; i++) {
       const angle = (2 * Math.PI * i) / pointsCount;
       points.push({
@@ -63,29 +62,51 @@
       const mx = e.clientX - rect.left;
       const dx = mx - center.x;
       const norm = Math.max(-1, Math.min(1, dx / (w / 2)));
-      // сглаженное приближение к новой цели
       mouseInfluence = 0.05 + 0.95 * (norm + 1) / 2;
     });
 
-    function draw() {
-      ctx.fillStyle = "#0d0d0d";
-      ctx.fillRect(0, 0, w, h);
-      ctx.strokeStyle = "white";
-      ctx.lineWidth = 0.1;
-
+    // плавно обновляем соединения (с fade эффектом)
+    function generateConnections(probability) {
+      const conns = [];
       for (let i = 0; i < points.length; i++) {
         for (let j = i + 1; j < points.length; j++) {
-          // шанс соединения зависит от дистанции и mouseInfluence
-          const prob = mouseInfluence * 0.01;
-          if (Math.random() < prob) {
-            ctx.beginPath();
-            ctx.moveTo(points[i].x, points[i].y);
-            ctx.lineTo(points[j].x, points[j].y);
-            ctx.stroke();
+          if (Math.random() < probability) {
+            conns.push({ a: i, b: j, alpha: 0 }); // alpha для fade-in
           }
         }
       }
+      return conns;
+    }
 
+    // каждые 4 секунды — новое поколение соединений
+    setInterval(() => {
+      connections = generateConnections(mouseInfluence * 0.015);
+    }, 4000);
+
+    function draw() {
+      // тёмная заливка с альфой — для "шлейфа"
+      ctx.fillStyle = "rgba(13, 13, 13, 0.15)";
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.strokeStyle = "white";
+      ctx.lineWidth = 0.2;
+
+      for (let i = 0; i < connections.length; i++) {
+        const { a, b } = connections[i];
+
+        // Медленно "включаем" линию
+        if (connections[i].alpha < 1) {
+          connections[i].alpha += 0.01;
+        }
+
+        ctx.globalAlpha = connections[i].alpha;
+        ctx.beginPath();
+        ctx.moveTo(points[a].x, points[a].y);
+        ctx.lineTo(points[b].x, points[b].y);
+        ctx.stroke();
+      }
+
+      ctx.globalAlpha = 1;
       requestAnimationFrame(draw);
     }
 
