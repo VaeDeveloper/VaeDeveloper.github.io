@@ -52,10 +52,10 @@ transform: translate(-50%, -50%);
   <script>
     const canvas = document.getElementById("graph");
     const ctx = canvas.getContext("2d");
-    let width = canvas.width = window.innerWidth - 100;
-    let height = canvas.height = window.innerHeight - 100;
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
 
-    const nodeCount = 150;
+    const nodeCount = 100;
     let nodes = [];
     let connections = [];
     let hoveredNodeIndex = null;
@@ -195,7 +195,7 @@ transform: translate(-50%, -50%);
         const angle = Math.atan2(dy, dx);
         n.dx += Math.cos(angle) * impulse * 1.5;
         n.dy += Math.sin(angle) * impulse * 1.5;
-        n.targetRadius = Math.min(15, n.radius + impulse * 3);
+        n.targetRadius = Math.min(50, n.radius + impulse * 5);
       });
     });
 
@@ -253,9 +253,10 @@ transform: translate(-50%, -50%);
         if (!n.hasConnection) return;
 
         if (n.targetRadius > 0) {
-          n.radius += (n.targetRadius - n.radius) * 0.1;
-          if (Math.abs(n.targetRadius - n.radius) < 0.1) {
-            n.targetRadius = 0;
+  const maxRadius = 50;
+  n.radius += (Math.min(maxRadius, n.targetRadius) - n.radius) * 0.1;
+  if (Math.abs(n.targetRadius - n.radius) < 0.1) {
+    n.targetRadius = 0;
           }
         } else {
           const base = 2.5;
@@ -297,7 +298,7 @@ nodes.forEach((n, index) => {
       n.x > rect.left && n.x < rect.right &&
       n.y > rect.top && n.y < rect.bottom
     ) {
-      // отскок от кнопки
+
       const cx = (rect.left + rect.right) / 2;
       const cy = (rect.top + rect.bottom) / 2;
       const dx = n.x - cx;
