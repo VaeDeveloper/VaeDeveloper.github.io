@@ -121,6 +121,38 @@
       }
     }
 
+    function dynamicConnectionUpdate() {
+      connections = connections.filter(([i, j]) => {
+        const a = nodes[i];
+        const b = nodes[j];
+        const dx = a.x - b.x;
+        const dy = a.y - b.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        return dist < 300;
+      });
+
+      nodes.forEach((node, i) => {
+        const connected = new Set(connections.flat());
+        if (!connected.has(i)) {
+          let closest = null;
+          let closestDist = Infinity;
+          for (let j = 0; j < nodes.length; j++) {
+            if (i === j) continue;
+            const dx = nodes[i].x - nodes[j].x;
+            const dy = nodes[i].y - nodes[j].y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < closestDist) {
+              closestDist = dist;
+              closest = j;
+            }
+          }
+          if (closest !== null) {
+            connections.push([i, closest]);
+          }
+        }
+      });
+    }
+
     canvas.addEventListener("mousemove", e => {
       const rect = canvas.getBoundingClientRect();
       const mx = e.clientX - rect.left;
@@ -201,6 +233,8 @@
     function draw() {
       ctx.fillStyle = "#111111";
       ctx.fillRect(0, 0, width, height);
+
+      dynamicConnectionUpdate();
 
       connections.forEach(([i, j]) => {
         const a = nodes[i];
