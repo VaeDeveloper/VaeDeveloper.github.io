@@ -1,24 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Node Editor</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="https://unpkg.com/drawflow/dist/drawflow.min.css" />
-  <style>
-    body, html {
-      margin: 0; padding: 0; height: 100%; overflow: hidden;
-      font-family: 'Segoe UI', Tahoma, sans-serif;
-      background-color: #111111;
-      color: #eee;
-      user-select: none;
-    }
-    #drawflow {
-      width: 100%;
-      height: 100vh;
-      background-color: #1a1a1a;
-    }
-  </style>
+<meta charset="UTF-8" />
+<title>Drawflow Demo</title>
+<link rel="stylesheet" href="https://unpkg.com/drawflow/dist/drawflow.min.css" />
+<style>
+  #drawflow {
+    width: 100vw;
+    height: 100vh;
+    background: #111;
+  }
+</style>
 </head>
 <body>
   <div id="drawflow"></div>
@@ -28,23 +20,23 @@
     const editor = new Drawflow(document.getElementById('drawflow'));
     editor.start();
 
-    // Добавляем две ноды вручную с id и параметрами
-    editor.addNode('Hello Node', 1, 1, 100, 100, 'node_1', {}, `
-      <div style="padding:10px; color:#00ffff;">
-        Hello World
+    editor.addNode('Node 1', 1, 1, 100, 100, 'node1', {}, `
+      <div style="padding:10px; color:#0ff;">
+        <p>Node 1</p>
+        <div class="input" data-input="input_1"></div>
         <div class="output" data-output="output_1"></div>
       </div>
     `);
 
-    editor.addNode('Another Node', 1, 1, 400, 100, 'node_2', {}, `
-      <div style="padding:10px; color:#00ffff;">
-        Another Node
+    editor.addNode('Node 2', 1, 1, 400, 100, 'node2', {}, `
+      <div style="padding:10px; color:#0ff;">
+        <p>Node 2</p>
         <div class="input" data-input="input_1"></div>
+        <div class="output" data-output="output_1"></div>
       </div>
     `);
 
-    // Создаем соединение вручную
-    editor.addConnection('node_1', 'output_1', 'node_2', 'input_1');
+    editor.addConnection('node1', 'output_1', 'node2', 'input_1');
   </script>
 </body>
 </html>
