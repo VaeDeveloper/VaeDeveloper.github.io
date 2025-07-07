@@ -86,9 +86,20 @@
   </div>
 
   <script>
-    const secretKey = 7; // hidden shift key
-    const originalText = "HELLO, VaeDeveloper! THIS IS A CAESAR CIPHER PUZZLE.";
+    // Hidden shift key
+    const secretKey = 7;
+    // Encrypted message contains a "hacker-style" text inviting to connect on GitHub
+    const originalText = `4A6F696E2074686520667265616B7320616E6420656E74657220746865206E6574776F726B2E
+4B65793A20436F6E74616374206D652061742068747470733A2F2F6769746875622E636F6D2F566165446576656C6F706572`;
 
+    // Helper: convert hex string to ascii text
+    function hexToAscii(hex) {
+      return hex.replace(/\s+/g, '').match(/.{1,2}/g)
+        .map(byte => String.fromCharCode(parseInt(byte, 16)))
+        .join('');
+    }
+
+    // Caesar cipher function (positive shift encrypts, negative decrypts)
     function caesarShift(str, shift) {
       return str.split('').map(char => {
         const code = char.charCodeAt(0);
@@ -102,7 +113,9 @@
       }).join('');
     }
 
-    const encryptedText = caesarShift(originalText, secretKey);
+    // Convert hex to ascii, then encrypt with Caesar cipher
+    const asciiText = hexToAscii(originalText);
+    const encryptedText = caesarShift(asciiText, secretKey);
     document.getElementById('encrypted').textContent = encryptedText;
 
     const decryptBtn = document.getElementById('decryptBtn');
