@@ -1,167 +1,168 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>UE-style Node Editor with Rete.js</title>
-  <style>
-    body, html {
-      margin: 0; height: 100%; background: #111;
-      font-family: 'Segoe UI', Tahoma, sans-serif;
-      overflow: hidden;
-      user-select: none;
-    }
-    #rete {
-      width: 100vw;
-      height: 100vh;
-      position: relative;
-    }
-    .node {
-      background: #222;
-      border-radius: 8px;
-      box-shadow: 0 0 10px #00ffff88;
-      color: #eee;
-      overflow: hidden;
-      user-select: none;
-    }
-    .node .title {
-      background: #007f7f;
-      padding: 8px 15px;
-      font-weight: bold;
-      font-size: 1.1em;
-      border-bottom: 1px solid #00ffffaa;
-      text-align: center;
-      color: #00ffff;
-      text-shadow: 0 0 5px #00ffffcc;
-    }
-    .node .inputs, .node .outputs {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      padding: 10px 15px;
-    }
-    .socket {
-      width: 14px; height: 14px;
-      background: #00cccc;
-      border-radius: 50%;
-      box-shadow: 0 0 5px #00ccccaa;
-      cursor: pointer;
-    }
-    .socket:hover {
-      box-shadow: 0 0 12px #00ffffee;
-      background: #00ffff;
-    }
-    /* Connection path */
-    path.connection {
-      stroke: #00ffffcc;
-      stroke-width: 3;
-      fill: none;
-      filter: drop-shadow(0 0 3px #00ffff88);
-    }
-  </style>
+<meta charset="UTF-8" />
+<title>Simple UE-style Nodes</title>
+<style>
+  body { margin: 0; background: #111; color: #eee; font-family: Arial, sans-serif; }
+  #node-editor { width: 100vw; height: 100vh; background: #222; position: relative; overflow: hidden; }
+  .node {
+    position: absolute;
+    background: #333;
+    border: 2px solid #00ffff;
+    border-radius: 6px;
+    width: 160px;
+    padding: 10px;
+    box-sizing: border-box;
+    color: #ccc;
+    user-select: none;
+    cursor: move;
+  }
+  .node-header {
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #00ffff;
+    border-bottom: 1px solid #00ffff;
+    padding-bottom: 4px;
+  }
+  .node-output, .node-input {
+    height: 20px;
+    background: #444;
+    border-radius: 3px;
+    margin: 5px 0;
+    padding: 3px 6px;
+    font-size: 0.9em;
+  }
+  .connections {
+    position: absolute;
+    pointer-events: none;
+  }
+  svg {
+    position: absolute;
+    top: 0; left: 0;
+    overflow: visible;
+  }
+</style>
 </head>
 <body>
-  <div id="rete"></div>
 
-  <!-- Rete.js + dependencies -->
-  <script src="https://unpkg.com/rete@1.4.4/build/rete.min.js"></script>
-  <script src="https://unpkg.com/rete-area-plugin@0.2.1/build/area-plugin.min.js"></script>
-  <script src="https://unpkg.com/rete-connection-plugin@0.9.0/build/connection-plugin.min.js"></script>
-  <script src="https://unpkg.com/rete-vue-render-plugin@0.5.1/build/vue-render-plugin.min.js"></script>
+<div id="node-editor"></div>
 
-  <script>
-    // Basic Socket for connections
-    const numSocket = new Rete.Socket('Number value');
+<script>
+  const editor = document.getElementById('node-editor');
 
-    // Simple Number Control (to enter numbers)
-    class NumControl extends Rete.Control {
-      constructor(emitter, key, readonly) {
-        super(key);
-        this.emitter = emitter;
-        this.key = key;
-        this.template = `<input type="number" :readonly="readonly" :value="value" @input="change($event)" />`;
-        this.scope = { value: 0, readonly };
-      }
+  const nodesData = [
+    { id: 'node1', title: 'Add', x: 50, y: 50, inputs: ['A', 'B'], outputs: ['Result'] },
+    { id: 'node2', title: 'Multiply', x: 300, y: 150, inputs: ['X', 'Y'], outputs: ['Product'] },
+    { id: 'node3', title: 'Output', x: 600, y: 100, inputs: ['Value'], outputs: [] },
+  ];
 
-      setValue(val) {
-        this.scope.value = val;
-        this.update();
-      }
+  let connections = [];
 
-      change(e) {
-        this.scope.value = +e.target.value;
-        this.update();
-        this.emitter.trigger('process');
-      }
+  // Create nodes
+  nodesData.forEach(({id, title, x, y, inputs, outputs}) => {
+    const node = document.createElement('div');
+    node.classList.add('node');
+    node.style.left = x + 'px';
+    node.style.top = y + 'px';
+    node.id = id;
 
-      update() {
-        this.putData(this.key, this.scope.value);
-        this.updateView();
-      }
-    }
+    const header = document.createElement('div');
+    header.classList.add('node-header');
+    header.textContent = title;
+    node.appendChild(header);
 
-    // Number Node
-    class NumComponent extends Rete.Component {
-      constructor() {
-        super('Number');
-      }
+    inputs.forEach(input => {
+      const inputDiv = document.createElement('div');
+      inputDiv.classList.add('node-input');
+      inputDiv.textContent = input;
+      node.appendChild(inputDiv);
+    });
 
-      builder(node) {
-        const out = new Rete.Output('num', 'Number', numSocket);
-        return node.addControl(new NumControl(this.editor, 'num')).addOutput(out);
-      }
+    outputs.forEach(output => {
+      const outputDiv = document.createElement('div');
+      outputDiv.classList.add('node-output');
+      outputDiv.textContent = output;
+      node.appendChild(outputDiv);
+    });
 
-      worker(node, inputs, outputs) {
-        outputs['num'] = node.data.num;
-      }
-    }
+    // Drag functionality
+    let dragOffsetX, dragOffsetY, dragging = false;
 
-    // Add Node: sums two numbers
-    class AddComponent extends Rete.Component {
-      constructor() {
-        super('Add');
-      }
+    header.style.cursor = 'grab';
+    header.addEventListener('mousedown', e => {
+      dragging = true;
+      dragOffsetX = e.clientX - node.offsetLeft;
+      dragOffsetY = e.clientY - node.offsetTop;
+      header.style.cursor = 'grabbing';
+    });
 
-      builder(node) {
-        const inp1 = new Rete.Input('num1', 'Number 1', numSocket);
-        const inp2 = new Rete.Input('num2', 'Number 2', numSocket);
-        const out = new Rete.Output('num', 'Number', numSocket);
+    window.addEventListener('mouseup', () => {
+      dragging = false;
+      header.style.cursor = 'grab';
+    });
 
-        return node.addInput(inp1).addInput(inp2).addOutput(out);
-      }
+    window.addEventListener('mousemove', e => {
+      if (!dragging) return;
+      node.style.left = (e.clientX - dragOffsetX) + 'px';
+      node.style.top = (e.clientY - dragOffsetY) + 'px';
+      updateConnections();
+    });
 
-      worker(node, inputs, outputs) {
-        const n1 = inputs['num1'].length ? inputs['num1'][0] : node.data.num1 || 0;
-        const n2 = inputs['num2'].length ? inputs['num2'][0] : node.data.num2 || 0;
-        outputs['num'] = n1 + n2;
-      }
-    }
+    editor.appendChild(node);
+  });
 
-    async function createEditor(container) {
-      const components = [new NumComponent(), new AddComponent()];
+  // SVG for connections
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.style.width = '100%';
+  svg.style.height = '100%';
+  editor.appendChild(svg);
 
-      const editor = new Rete.NodeEditor('demo@0.1.0', container);
-      editor.use(ConnectionPlugin.default);
-      editor.use(AreaPlugin);
-      editor.use(VueRenderPlugin.default);
+  function updateConnections() {
+    svg.innerHTML = '';
+    // For demo, connect node1 output to node2 input and node2 output to node3 input
+    connections = [
+      { fromId: 'node1', fromOutputIndex: 0, toId: 'node2', toInputIndex: 0 },
+      { fromId: 'node2', fromOutputIndex: 0, toId: 'node3', toInputIndex: 0 },
+    ];
 
-      components.forEach(c => editor.register(c));
+    connections.forEach(({fromId, fromOutputIndex, toId, toInputIndex}) => {
+      const fromNode = document.getElementById(fromId);
+      const toNode = document.getElementById(toId);
 
-      editor.on('process nodecreated noderemoved connectioncreated connectionremoved', async () => {
-        await engine.abort();
-        await engine.process(editor.toJSON());
-      });
+      const fromOutputs = fromNode.querySelectorAll('.node-output');
+      const toInputs = toNode.querySelectorAll('.node-input');
 
-      const engine = new Rete.Engine('demo@0.1.0');
-      components.forEach(c => engine.register(c));
+      const fromElem = fromOutputs[fromOutputIndex];
+      const toElem = toInputs[toInputIndex];
 
-      await editor.view.resize();
-      AreaPlugin.zoomAt(editor);
-      editor.trigger('process');
+      if (!fromElem || !toElem) return;
 
-      return editor;
-    }
+      const fromRect = fromElem.getBoundingClientRect();
+      const toRect = toElem.getBoundingClientRect();
+      const editorRect = editor.getBoundingClientRect();
 
-    createEditor(document.getElementById('rete'));
-  </script>
+      const startX = fromRect.right - editorRect.left;
+      const startY = fromRect.top + fromRect.height / 2 - editorRect.top;
+
+      const endX = toRect.left - editorRect.left;
+      const endY = toRect.top + toRect.height / 2 - editorRect.top;
+
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("stroke", "#00ffff");
+      path.setAttribute("stroke-width", "2");
+      path.setAttribute("fill", "none");
+
+      const controlX = (startX + endX) / 2;
+      const d = `M${startX},${startY} C${controlX},${startY} ${controlX},${endY} ${endX},${endY}`;
+      path.setAttribute("d", d);
+
+      svg.appendChild(path);
+    });
+  }
+
+  updateConnections();
+</script>
+
 </body>
 </html>
