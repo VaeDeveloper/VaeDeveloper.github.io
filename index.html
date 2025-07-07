@@ -2,34 +2,31 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>VaeDeveloper</title>
+  <title>Generative Mesh</title>
   <style>
-    body {
+    html, body {
       margin: 0;
       background: #0d0d0d;
       overflow: hidden;
+      height: 100%;
       display: flex;
       justify-content: center;
       align-items: center;
-      flex-direction: column;
-      height: 100vh;
-      font-family: 'Segoe UI', Tahoma, sans-serif;
+      font-family: sans-serif;
     }
     canvas {
       display: block;
-      cursor: none;
     }
     .button {
-      margin-top: 40px;
-      padding: 14px 28px;
-      font-size: 1em;
-      background-color: #00ffff;
+      position: absolute;
+      bottom: 40px;
+      padding: 12px 24px;
+      background: #00ffff;
       color: #000;
       font-weight: bold;
       text-decoration: none;
       border-radius: 6px;
       transition: background-color 0.2s;
-      z-index: 1;
     }
     .button:hover {
       background-color: #00cccc;
@@ -37,56 +34,62 @@
   </style>
 </head>
 <body>
-  <canvas id="circle" width="700" height="700"></canvas>
+  <canvas id="canvas" width="800" height="800"></canvas>
   <a class="button" href="projects.html">View Projects</a>
 
   <script>
-    const canvas = document.getElementById("circle");
+    const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
-    const center = canvas.width / 2;
-    const radius = center * 0.95;
-    const points = 180;
+    const w = canvas.width;
+    const h = canvas.height;
+    const center = { x: w / 2, y: h / 2 };
+    const radius = w * 0.45;
+    const pointsCount = 360;
+    const points = [];
 
-    let mouseX = center;
-    let mouseY = center;
+    let mouseInfluence = 0.5;
 
-    canvas.addEventListener("mousemove", e => {
-      const rect = canvas.getBoundingClientRect();
-      mouseX = e.clientX - rect.left;
-      mouseY = e.clientY - rect.top;
-    });
-
-    function drawFrame(time) {
-      ctx.fillStyle = "#0d0d0d";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.strokeStyle = "white";
-      ctx.lineWidth = 0.3;
-
-      // модификатор зависит от мыши
-      const dx = mouseX - center;
-      const dy = mouseY - center;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      const mod = 2 + Math.sin(time * 0.001) + (dist / center);
-
-      for (let i = 0; i < points; i++) {
-        const angle1 = (2 * Math.PI * i) / points;
-        const angle2 = (2 * Math.PI * ((i * mod) % points)) / points;
-
-        const x1 = center + radius * Math.cos(angle1);
-        const y1 = center + radius * Math.sin(angle1);
-        const x2 = center + radius * Math.cos(angle2);
-        const y2 = center + radius * Math.sin(angle2);
-
-        ctx.beginPath();
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x2, y2);
-        ctx.stroke();
-      }
-
-      requestAnimationFrame(drawFrame);
+    // генерируем точки по кругу
+    for (let i = 0; i < pointsCount; i++) {
+      const angle = (2 * Math.PI * i) / pointsCount;
+      points.push({
+        x: center.x + radius * Math.cos(angle),
+        y: center.y + radius * Math.sin(angle)
+      });
     }
 
-    drawFrame(0);
+    canvas.addEventListener("mousemove", (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const dx = mx - center.x;
+      const norm = Math.max(-1, Math.min(1, dx / (w / 2)));
+      // сглаженное приближение к новой цели
+      mouseInfluence = 0.05 + 0.95 * (norm + 1) / 2;
+    });
+
+    function draw() {
+      ctx.fillStyle = "#0d0d0d";
+      ctx.fillRect(0, 0, w, h);
+      ctx.strokeStyle = "white";
+      ctx.lineWidth = 0.1;
+
+      for (let i = 0; i < points.length; i++) {
+        for (let j = i + 1; j < points.length; j++) {
+          // шанс соединения зависит от дистанции и mouseInfluence
+          const prob = mouseInfluence * 0.01;
+          if (Math.random() < prob) {
+            ctx.beginPath();
+            ctx.moveTo(points[i].x, points[i].y);
+            ctx.lineTo(points[j].x, points[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      requestAnimationFrame(draw);
+    }
+
+    draw();
   </script>
 </body>
 </html>
