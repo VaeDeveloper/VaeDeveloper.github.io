@@ -18,7 +18,7 @@
   .container {
     max-width: 1400px;
     min-width: 320px;
-    margin: 160px auto 0;
+    margin: 180px auto 0; /* отступ сверху под табы */
     padding: 40px 40px 80px;
     user-select: none;
     min-height: 600px;
@@ -38,6 +38,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    transition: all 0.3s ease;
   }
 
   /* Канвас - фон как у страницы, плюс свечение при наведении */
@@ -48,7 +49,7 @@
     border-radius: 0;
     box-shadow: none;
     user-select: none;
-    transition: box-shadow 0.3s ease;
+    transition: box-shadow 0.3s ease, opacity 0.3s ease;
     position: relative;
   }
   #art-container:hover {
@@ -196,68 +197,49 @@
   /* Мобильная адаптация */
   @media (max-width: 768px) {
     .tabs-wrapper {
-      position: static;
-      transform: none;
-      left: auto;
-      top: auto;
-      width: 100%;
-      margin: 0 auto 30px;
-      display: flex;
-      flex-direction: column;
+      top: 20px !important;
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      width: auto !important;
+      flex-direction: row !important;
+      justify-content: center !important;
       align-items: center;
-      z-index: 20;
+      gap: 16px;
+      background: #111111;
+      padding: 8px 0;
+      border-radius: 8px;
+      box-shadow: 0 0 15px rgba(0,204,204,0.3);
+      position: fixed !important;
+      z-index: 100;
     }
 
     #art-container {
-      width: 180px;
-      height: 180px;
-      margin: 0 auto;
-      box-shadow: none !important;
-    }
-
-    .tabs {
-      justify-content: center;
-      gap: 12px;
-      margin-top: 15px;
-      width: 100%;
-      max-width: 360px;
-    }
-
-    .tab {
-      width: 140px;
-      padding: 12px 0;
-      font-size: 1em;
-      border-radius: 10px;
+      display: none !important; /* скрываем арт */
     }
 
     .container {
-      margin: 40px auto 0;
-      padding: 20px 15px 80px;
-      min-width: auto;
-      min-height: auto;
+      margin-top: 100px !important; /* отступ вниз под фиксированные табы */
+      padding: 20px 15px 80px !important;
+      min-height: auto !important;
       transition: margin 0.3s ease;
     }
 
-    .grid {
-      grid-template-columns: 1fr;
-      gap: 25px;
-    }
-
-    #signature {
-      font-size: 1em;
-      bottom: 10px;
-      left: 10px;
+    .tab {
+      width: 140px !important;
+      padding: 12px 0 !important;
+      font-size: 1em !important;
+      border-radius: 10px !important;
     }
   }
 </style>
 </head>
 <body>
 
-  <div class="tabs-wrapper">
+  <div class="tabs-wrapper" role="tablist" aria-label="Section navigation">
     <div id="art-container" aria-label="Generative art canvas" role="img">
       <canvas id="generative-art" width="260" height="260"></canvas>
     </div>
-    <div class="tabs" role="tablist">
+    <div class="tabs">
       <div class="tab active" data-tab="projects" role="tab" tabindex="0" aria-selected="true" aria-controls="projects">Projects</div>
       <div class="tab" data-tab="bio" role="tab" tabindex="-1" aria-selected="false" aria-controls="bio">Bio</div>
     </div>
@@ -406,7 +388,9 @@
   }
   drawArt();
 
-  window.addEventListener('resize', drawArt);
+  window.addEventListener('resize', () => {
+    drawArt();
+  });
 
   // Анимация подписи
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
