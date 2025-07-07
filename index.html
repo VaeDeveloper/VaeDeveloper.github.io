@@ -1,199 +1,173 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>VaeDeveloper Portfolio</title>
-  <meta name="description" content="Project portfolio and bio of VaeDeveloper" />
-  <style>
-    html, body {
-      margin: 0;
-      background-color: #111111;
-      color: #cccccc;
-      font-family: 'Segoe UI', Tahoma, sans-serif;
-      height: 100%;
-      user-select: none;
-    }
+<meta charset="UTF-8" />
+<title>VaeDeveloper Projects & Bio</title>
+<meta name="description" content="Project portfolio by VaeDeveloper" />
+<style>
+  html, body {
+    margin: 0;
+    background-color: #111111;
+    color: #cccccc;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    height: 100%;
+    overflow-x: hidden;
+  }
 
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 40px 40px 80px;
-    }
+  .container {
+    max-width: 1400px;
+    margin: 80px auto 0;
+    padding: 40px 40px 80px;
+    user-select: none;
+  }
 
-    /* Вкладки */
-    .tabs {
-      position: fixed;
-      top: 20px;
-      right: 40px;
-      display: flex;
-      gap: 20px;
-      z-index: 10;
-    }
+  /* Вкладки */
+  .tabs {
+    position: fixed;
+    top: 20px;
+    left: 55%; /* немного правее центра */
+    transform: translateX(-50%);
+    display: flex;
+    gap: 20px;
+    width: 260px; /* ширина под две кнопки по 120px + gap */
+    justify-content: space-between;
+    z-index: 10;
+  }
 
-    .tab {
-      cursor: pointer;
-      padding: 10px 20px;
-      border-radius: 8px;
-      background-color: #1a1a1a;
-      color: #aaa;
-      font-weight: 600;
-      transition: background-color 0.3s, color 0.3s;
-      user-select: none;
-    }
+  .tab {
+    cursor: pointer;
+    padding: 10px 0;
+    width: 120px;
+    border-radius: 8px;
+    background-color: #1a1a1a;
+    color: #aaa;
+    font-weight: 600;
+    text-align: center;
+    transition: background-color 0.3s, color 0.3s;
+    user-select: none;
+    box-sizing: border-box;
+    border: 1px solid transparent;
+  }
 
-    .tab.active {
-      background-color: #333333;
-      color: #00cccc;
-      box-shadow: 0 0 10px #00cccc;
-    }
+  .tab.active {
+    background-color: #333333;
+    color: #00cccc;
+    box-shadow: 0 0 10px #00cccc;
+    border-color: #00cccc;
+  }
 
-    /* Контент */
-    .content {
-      margin-top: 20px;
-    }
+  /* Проекты */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+  }
 
-    .content-section {
-      display: none;
-    }
-
-    .content-section.active {
-      display: block;
-    }
-
-    /* Проекты */
+  @media (max-width: 1000px) {
     .grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 40px;
+      grid-template-columns: 1fr;
     }
+  }
 
-    @media (max-width: 1000px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
-    }
+  .project {
+    background-color: #1a1a1a;
+    border-radius: 16px;
+    padding: 30px 25px;
+    box-shadow: 0 0 16px rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.3s ease;
+  }
 
-    .project {
-      background-color: #1a1a1a;
-      border-radius: 16px;
-      padding: 30px 25px;
-      box-shadow: 0 0 16px rgba(255, 255, 255, 0.05);
-      display: flex;
-      flex-direction: column;
-      transition: box-shadow 0.3s ease;
-    }
+  .project:hover {
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.15);
+  }
 
-    .project:hover {
-      box-shadow: 0 0 30px rgba(255, 255, 255, 0.15);
-    }
+  .project h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #cccccc;
+    font-size: 1.5em;
+    user-select: none;
+  }
 
-    .project h2 {
-      margin-top: 0;
-      margin-bottom: 15px;
-      color: #cccccc;
-      font-size: 1.5em;
-      user-select: none;
-    }
+  .project img {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    pointer-events: none;
+    user-select: none;
+    filter: brightness(0.9);
+  }
 
-    .project img {
-      width: 100%;
-      height: auto;
-      border-radius: 12px;
-      margin-bottom: 20px;
-      pointer-events: none;
-      user-select: none;
-      filter: brightness(0.9);
-    }
+  .project p {
+    font-size: 1em;
+    line-height: 1.7;
+    flex-grow: 1;
+    color: #aaa;
+    user-select: none;
+  }
 
-    .project p {
-      font-size: 1em;
-      line-height: 1.7;
-      flex-grow: 1;
-      color: #aaa;
-      user-select: none;
-    }
+  .buttons {
+    margin-top: 25px;
+  }
 
-    .buttons {
-      margin-top: 25px;
-    }
+  .button {
+    display: inline-block;
+    margin-right: 10px;
+    padding: 10px 22px;
+    background-color: #333333;
+    color: #ddd;
+    font-weight: bold;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background-color 0.2s;
+    user-select: none;
+    border: 1px solid #555555;
+  }
 
-    .button {
-      display: inline-block;
-      margin-right: 10px;
-      padding: 10px 22px;
-      background-color: #333333;
-      color: #ddd;
-      font-weight: bold;
-      border-radius: 6px;
-      text-decoration: none;
-      transition: background-color 0.2s;
-      user-select: none;
-      border: 1px solid #555555;
-    }
+  .button:hover {
+    background-color: #555555;
+  }
 
-    .button:hover {
-      background-color: #555555;
-    }
+  /* Биография и контакты */
+  .bio {
+    color: #cccccc;
+    font-size: 1.1em;
+    line-height: 1.6;
+    max-width: 700px;
+    margin: 0 auto;
+    display: none;
+  }
 
-    /* Bio */
-    .bio {
-      max-width: 700px;
-      margin: 0 auto;
-      color: #aaa;
-      line-height: 1.6;
-      font-size: 1.1em;
-    }
+  .bio.active {
+    display: block;
+  }
 
-    .bio h2 {
-      color: #00cccc;
-      margin-bottom: 15px;
-    }
+  /* Футер */
+  .footer {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 30px 40px 80px;
+    text-align: left;
+    border-top: 1px solid #222;
+    font-size: 1em;
+    color: #666;
+    user-select: none;
+  }
 
-    .contact-links {
-      margin-top: 25px;
-      display: flex;
-      gap: 20px;
-      justify-content: center;
-    }
+  .footer a {
+    color: #cccccc;
+    text-decoration: none;
+    margin: 0 10px;
+    font-weight: bold;
+  }
 
-    .contact-links a {
-      color: #00cccc;
-      text-decoration: none;
-      font-weight: 600;
-      border: 1px solid #00cccc;
-      padding: 8px 14px;
-      border-radius: 6px;
-      transition: background-color 0.3s;
-    }
-
-    .contact-links a:hover {
-      background-color: #00cccc;
-      color: #111;
-    }
-
-    /* Footer */
-    .footer {
-      max-width: 1400px;
-      margin: 40px auto 20px;
-      padding: 0 40px;
-      text-align: left;
-      border-top: 1px solid #222;
-      font-size: 1em;
-      color: #666;
-      user-select: none;
-    }
-
-    .footer a {
-      color: #cccccc;
-      text-decoration: none;
-      margin: 0 10px;
-      font-weight: bold;
-    }
-
-    .footer a:hover {
-      color: #eeeeee;
-    }
-  </style>
+  .footer a:hover {
+    color: #eeeeee;
+  }
+</style>
 </head>
 <body>
 
@@ -203,7 +177,7 @@
   </div>
 
   <div class="container">
-    <div id="projects" class="content-section active">
+    <div id="projects" class="content active">
       <div class="grid">
         <div class="project">
           <h2>NoiseGenerator</h2>
@@ -254,21 +228,13 @@
       </div>
     </div>
 
-    <div id="bio" class="content-section">
-      <div class="bio">
-        <h2>About Me</h2>
-        <p>
-          Hi, I’m VaeDeveloper — a passionate programmer and game developer. I specialize in C++ and Unreal Engine tools. I love building efficient editor utilities and plugins that improve workflow and creativity.
-        </p>
-
-        <h2>Contact</h2>
-        <div class="contact-links">
-          <a href="mailto:youremail@example.com" target="_blank" rel="noopener noreferrer">Email</a>
-          <a href="https://www.youtube.com/channel/yourchannel" target="_blank" rel="noopener noreferrer">YouTube</a>
-          <a href="https://github.com/VaeDeveloper" target="_blank" rel="noopener noreferrer">GitHub</a>
-          <a href="https://www.linkedin.com/in/yourprofile" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-        </div>
-      </div>
+    <div id="bio" class="bio">
+      <h2>About Me</h2>
+      <p>Hello! I'm VaeDeveloper, a passionate developer specialized in C++ and Unreal Engine tools. I love creating helpful and powerful editor utilities, plugins, and interactive applications.</p>
+      <h3>Contact</h3>
+      <p>Email: <a href="mailto:youremail@example.com" style="color:#00cccc;">youremail@example.com</a></p>
+      <p>GitHub: <a href="https://github.com/VaeDeveloper" target="_blank" rel="noopener noreferrer" style="color:#00cccc;">https://github.com/VaeDeveloper</a></p>
+      <p>Reddit: <a href="https://www.reddit.com/user/dalexdeb/submitted/" target="_blank" rel="noopener noreferrer" style="color:#00cccc;">https://www.reddit.com/user/dalexdeb/submitted/</a></p>
     </div>
   </div>
 
@@ -278,24 +244,28 @@
     <a href="https://www.reddit.com/user/dalexdeb/submitted/" target="_blank" rel="noopener noreferrer">Reddit</a>
   </div>
 
-  <script>
-    const tabs = document.querySelectorAll('.tab');
-    const sections = document.querySelectorAll('.content-section');
+<script>
+  const tabs = document.querySelectorAll('.tab');
+  const projectsSection = document.getElementById('projects');
+  const bioSection = document.getElementById('bio');
 
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        // Активная вкладка
-        tabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      // Снимаем активность со всех вкладок
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
 
-        // Показать соотв. секцию
-        const target = tab.getAttribute('data-tab');
-        sections.forEach(section => {
-          section.classList.toggle('active', section.id === target);
-        });
-      });
+      // Показываем/скрываем соответствующие секции
+      if (tab.dataset.tab === 'projects') {
+        projectsSection.classList.add('active');
+        bioSection.classList.remove('active');
+      } else if (tab.dataset.tab === 'bio') {
+        bioSection.classList.add('active');
+        projectsSection.classList.remove('active');
+      }
     });
-  </script>
+  });
+</script>
 
 </body>
 </html>
