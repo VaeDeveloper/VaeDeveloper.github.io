@@ -37,7 +37,7 @@
     display: flex;
     gap: 20px;
     justify-content: flex-start;
-    margin-bottom: 20px;
+    margin-top: 10px;
   }
 
   .tab {
@@ -62,14 +62,12 @@
     border-color: #00cccc;
   }
 
-  /* Canvas container */
   #art-container {
     width: 260px;
     height: 260px;
     background-color: #222;
     border-radius: 0;
     box-shadow: 0 0 15px rgba(0, 204, 204, 0.3);
-    margin-bottom: 10px;
     user-select: none;
   }
 
@@ -258,48 +256,50 @@
     });
   });
 
-
+  // Генеративный арт с рандомными линиями в круге
   const canvas = document.getElementById('generative-art');
   const ctx = canvas.getContext('2d');
   const W = canvas.width;
   const H = canvas.height;
+
+  // Очистка и фон
   ctx.fillStyle = '#222';
   ctx.fillRect(0, 0, W, H);
 
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
-  ctx.lineWidth = 0.5;
-
+  // Рисуем большой круг границы
   const centerX = W / 2;
   const centerY = H / 2;
   const radius = W / 2 - 1;
 
-
   ctx.beginPath();
   ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+  ctx.strokeStyle = 'rgba(255,255,255,0.05)';
   ctx.lineWidth = 1;
   ctx.stroke();
 
-
-  const pointsCount = 180; 
-  const points = [];
-
-  for (let i = 0; i < pointsCount; i++) {
-    const angle = (i / pointsCount) * Math.PI * 2;
-    points.push({
-      x: centerX + radius * Math.cos(angle),
-      y: centerY + radius * Math.sin(angle)
-    });
+  // Функция генерации случайной точки внутри круга
+  function randomPointInCircle(cx, cy, r) {
+    let x, y;
+    do {
+      x = Math.random() * (r * 2) - r;
+      y = Math.random() * (r * 2) - r;
+    } while (x * x + y * y > r * r);
+    return { x: cx + x, y: cy + y };
   }
 
-  // Соединяем точки с отступом, как в арт-изображении
-  for (let i = 0; i < pointsCount; i++) {
-    for (let j = i + 20; j < pointsCount; j += 5) {
-      ctx.beginPath();
-      ctx.moveTo(points[i].x, points[i].y);
-      ctx.lineTo(points[j].x, points[j].y);
-      ctx.stroke();
-    }
+  // Рисуем линии
+  const linesCount = 800; // Кол-во линий
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+  ctx.lineWidth = 0.5;
+
+  for (let i = 0; i < linesCount; i++) {
+    const p1 = randomPointInCircle(centerX, centerY, radius);
+    const p2 = randomPointInCircle(centerX, centerY, radius);
+
+    ctx.beginPath();
+    ctx.moveTo(p1.x, p1.y);
+    ctx.lineTo(p2.x, p2.y);
+    ctx.stroke();
   }
 </script>
 
