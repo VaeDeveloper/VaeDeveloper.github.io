@@ -2,262 +2,193 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>VaeDeveloper — Living Graph with Nodes</title>
+<title>UE-style draggable nodes with logs</title>
 <style>
-  html, body {
-    margin: 0;
-    background: #111111;
-    overflow: hidden;
-    height: 100%;
-    font-family: 'Segoe UI', Tahoma, sans-serif;
-    user-select: none;
-  }
-  canvas {
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-  }
+  body { margin: 0; background: #111; color: #eee; font-family: Arial, sans-serif; overflow: hidden; }
+  #node-editor { width: 100vw; height: 100vh; background: #222; position: relative; overflow: hidden; }
   .node {
     position: absolute;
-    background: #222;
+    background: #333;
+    border: 2px solid #00ffff;
+    border-radius: 6px;
+    width: 160px;
+    padding: 10px;
+    box-sizing: border-box;
+    color: #ccc;
+    user-select: none;
+    cursor: default;
+  }
+  .node-header {
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #00ffff;
+    border-bottom: 1px solid #00ffff;
+    padding-bottom: 4px;
+    cursor: grab;
+  }
+  .node-output, .node-input {
+    height: 20px;
+    background: #444;
+    border-radius: 3px;
+    margin: 5px 0;
+    padding: 3px 6px;
+    font-size: 0.9em;
+  }
+  svg {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: visible;
+  }
+  #log-window {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 360px;
+    max-height: 120px;
+    background: rgba(0,0,0,0.7);
     border: 1px solid #00ffff;
     border-radius: 6px;
-    padding: 10px;
     color: #00ffff;
-    cursor: grab;
-    user-select: none;
-    width: 140px;
-    text-align: center;
-  }
-  .node:active {
-    cursor: grabbing;
+    font-family: monospace;
+    font-size: 12px;
+    padding: 8px;
+    overflow-y: auto;
+    box-sizing: border-box;
+    user-select: text;
+    z-index: 1000;
   }
 </style>
 </head>
 <body>
-  <canvas id="graph"></canvas>
 
-  <div id="nodes-container"></div>
+<div id="node-editor"></div>
+<div id="log-window"></div>
 
-  <script>
-    const canvas = document.getElementById("graph");
-    const ctx = canvas.getContext("2d");
-    let width = canvas.width = window.innerWidth;
-    let height = canvas.height = window.innerHeight;
+<script>
+  const editor = document.getElementById('node-editor');
+  const logWindow = document.getElementById('log-window');
 
-    // Узлы для графа (точки с радиусом)
-    const nodeCount = 170;
-    let nodes = [];
-    let connections = [];
-    let hoveredNodeIndex = null;
+  function printLog(msg) {
+    const time = new Date().toLocaleTimeString();
+    logWindow.innerHTML += `[${time}] ${msg}<br>`;
+    logWindow.scrollTop = logWindow.scrollHeight;
+  }
 
-    // Для кастомных html-нод
-    const htmlNodes = [];
+  const nodesData = [
+    { id: 'node1', title: 'Add', x: 50, y: 50, inputs: ['A', 'B'], outputs: ['Result'] },
+    { id: 'node2', title: 'Multiply', x: 300, y: 150, inputs: ['X', 'Y'], outputs: ['Product'] },
+    { id: 'node3', title: 'Output', x: 600, y: 100, inputs: ['Value'], outputs: [] },
+  ];
 
-    // Функция создания случайных граф-точек
-    function createNodes() {
-      nodes = [];
-      for (let i = 0; i < nodeCount; i++) {
-        const dx = (Math.random() - 0.5) * 0.3;
-        const dy = (Math.random() - 0.5) * 0.3;
-        const radius = (i % 2 === 0) ? 2 + Math.random() * 2 : 3 + Math.random() * 3;
-        nodes.push({
-          x: Math.random() * width,
-          y: Math.random() * height,
-          dx,
-          dy,
-          initialDx: dx,
-          initialDy: dy,
-          radius,
-          targetRadius: 0,
-          hasConnection: false
-        });
-      }
-    }
+  let connections = [];
 
-    // Создаем связи
-    function createConnections() {
-      connections = [];
-      nodes.forEach(n => n.hasConnection = false);
+  nodesData.forEach(({id, title, x, y, inputs, outputs}) => {
+    const node = document.createElement('div');
+    node.classList.add('node');
+    node.style.left = x + 'px';
+    node.style.top = y + 'px';
+    node.id = id;
 
-      for (let i = 0; i < nodes.length; i++) {
-        let closest = null;
-        let closestDist = Infinity;
-        for (let j = 0; j < nodes.length; j++) {
-          if (i === j) continue;
-          const dx = nodes[i].x - nodes[j].x;
-          const dy = nodes[i].y - nodes[j].y;
-          const dist = Math.sqrt(dx*dx + dy*dy);
-          if (dist < 180) {
-            connections.push([i, j]);
-            nodes[i].hasConnection = true;
-            nodes[j].hasConnection = true;
-          }
-          if (dist < closestDist) {
-            closestDist = dist;
-            closest = j;
-          }
-        }
-        if (!nodes[i].hasConnection || closestDist > 250) {
-          if (closest !== null) {
-            connections.push([i, closest]);
-            nodes[i].hasConnection = true;
-            nodes[closest].hasConnection = true;
-          }
-        }
-      }
-    }
+    const header = document.createElement('div');
+    header.classList.add('node-header');
+    header.textContent = title;
+    node.appendChild(header);
 
-    // Проверка на близость курсора к линии (для удаления связей)
-    function isNearLine(x1,y1,x2,y2,px,py,threshold=5) {
-      const A = px - x1;
-      const B = py - y1;
-      const C = x2 - x1;
-      const D = y2 - y1;
-
-      const dot = A*C + B*D;
-      const len_sq = C*C + D*D;
-      let param = -1;
-      if (len_sq !== 0) param = dot / len_sq;
-
-      let xx, yy;
-
-      if (param < 0) {
-        xx = x1;
-        yy = y1;
-      } else if (param > 1) {
-        xx = x2;
-        yy = y2;
-      } else {
-        xx = x1 + param * C;
-        yy = y1 + param * D;
-      }
-
-      const dx = px - xx;
-      const dy = py - yy;
-      return (dx*dx + dy*dy) <= threshold*threshold;
-    }
-
-    // Удаление связи по клику
-    canvas.addEventListener('click', e => {
-      const rect = canvas.getBoundingClientRect();
-      const mx = e.clientX - rect.left;
-      const my = e.clientY - rect.top;
-      let clickedIndex = -1;
-      for (let i = 0; i < connections.length; i++) {
-        const [aIdx,bIdx] = connections[i];
-        const a = nodes[aIdx];
-        const b = nodes[bIdx];
-        if (isNearLine(a.x,a.y,b.x,b.y,mx,my)) {
-          clickedIndex = i;
-          break;
-        }
-      }
-      if (clickedIndex !== -1) {
-        connections.splice(clickedIndex,1);
-      }
+    inputs.forEach(input => {
+      const inputDiv = document.createElement('div');
+      inputDiv.classList.add('node-input');
+      inputDiv.textContent = input;
+      node.appendChild(inputDiv);
     });
 
-    // Отрисовка линий и точек
-    function draw() {
-      ctx.clearRect(0,0,width,height);
-      ctx.fillStyle = "#111111";
-      ctx.fillRect(0,0,width,height);
-
-      // Линии
-      connections.forEach(([i,j]) => {
-        const a = nodes[i];
-        const b = nodes[j];
-        ctx.beginPath();
-        ctx.moveTo(a.x,a.y);
-        ctx.lineTo(b.x,b.y);
-        ctx.strokeStyle = "#888";
-        ctx.lineWidth = 1;
-        ctx.stroke();
-      });
-
-      // Точки
-      nodes.forEach(n => {
-        ctx.beginPath();
-        ctx.arc(n.x,n.y,n.radius,0,Math.PI*2);
-        ctx.fillStyle = "#ccc";
-        ctx.fill();
-      });
-
-      requestAnimationFrame(draw);
-    }
-
-    // Обновление положения точек
-    function updatePositions() {
-      nodes.forEach(n => {
-        n.x += n.dx;
-        n.y += n.dy;
-
-        // Границы
-        if (n.x < 10) { n.x = 10; n.dx = Math.abs(n.dx); }
-        if (n.x > width - 10) { n.x = width - 10; n.dx = -Math.abs(n.dx); }
-        if (n.y < 10) { n.y = 10; n.dy = Math.abs(n.dy); }
-        if (n.y > height - 10) { n.y = height - 10; n.dy = -Math.abs(n.dy); }
-      });
-      setTimeout(updatePositions, 20);
-    }
-
-    // --- HTML ноды с перетаскиванием ---
-    const nodesContainer = document.getElementById('nodes-container');
-
-    function createHtmlNode(id, label, x, y) {
-      const el = document.createElement('div');
-      el.className = 'node';
-      el.textContent = label;
-      el.style.left = x + 'px';
-      el.style.top = y + 'px';
-      el.dataset.id = id;
-      nodesContainer.appendChild(el);
-
-      // Перетаскивание
-      let offsetX, offsetY;
-      let dragging = false;
-
-      el.addEventListener('mousedown', e => {
-        dragging = true;
-        offsetX = e.clientX - el.offsetLeft;
-        offsetY = e.clientY - el.offsetTop;
-        el.style.cursor = 'grabbing';
-      });
-
-      window.addEventListener('mouseup', e => {
-        dragging = false;
-        el.style.cursor = 'grab';
-      });
-
-      window.addEventListener('mousemove', e => {
-        if (dragging) {
-          el.style.left = (e.clientX - offsetX) + 'px';
-          el.style.top = (e.clientY - offsetY) + 'px';
-          // Можно сюда добавить связь с canvas, если нужно
-        }
-      });
-
-      htmlNodes.push(el);
-      return el;
-    }
-
-    // Создаем пару html-нод для примера
-    createHtmlNode('nodeA', 'Node A', 100, 100);
-    createHtmlNode('nodeB', 'Node B', 300, 200);
-
-    // Запускаем граф
-    createNodes();
-    createConnections();
-    draw();
-    updatePositions();
-
-    // При ресайзе
-    window.addEventListener('resize', () => {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
+    outputs.forEach(output => {
+      const outputDiv = document.createElement('div');
+      outputDiv.classList.add('node-output');
+      outputDiv.textContent = output;
+      node.appendChild(outputDiv);
     });
-  </script>
+
+    // Drag functionality
+    let dragOffsetX = 0, dragOffsetY = 0, dragging = false;
+
+    header.addEventListener('mousedown', e => {
+      dragging = true;
+      dragOffsetX = e.clientX - node.offsetLeft;
+      dragOffsetY = e.clientY - node.offsetTop;
+      header.style.cursor = 'grabbing';
+      printLog(`Started dragging node "${title}"`);
+      e.preventDefault(); // чтобы не выделялся текст
+    });
+
+    window.addEventListener('mouseup', () => {
+      if(dragging) {
+        printLog(`Stopped dragging node "${title}"`);
+      }
+      dragging = false;
+      header.style.cursor = 'grab';
+    });
+
+    window.addEventListener('mousemove', e => {
+      if (!dragging) return;
+      node.style.left = (e.clientX - dragOffsetX) + 'px';
+      node.style.top = (e.clientY - dragOffsetY) + 'px';
+      updateConnections();
+    });
+
+    editor.appendChild(node);
+  });
+
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  editor.appendChild(svg);
+
+  function updateConnections() {
+    svg.innerHTML = '';
+    connections = [
+      { fromId: 'node1', fromOutputIndex: 0, toId: 'node2', toInputIndex: 0 },
+      { fromId: 'node2', fromOutputIndex: 0, toId: 'node3', toInputIndex: 0 },
+    ];
+
+    connections.forEach(({fromId, fromOutputIndex, toId, toInputIndex}) => {
+      const fromNode = document.getElementById(fromId);
+      const toNode = document.getElementById(toId);
+
+      const fromOutputs = fromNode.querySelectorAll('.node-output');
+      const toInputs = toNode.querySelectorAll('.node-input');
+
+      const fromElem = fromOutputs[fromOutputIndex];
+      const toElem = toInputs[toInputIndex];
+
+      if (!fromElem || !toElem) return;
+
+      const fromRect = fromElem.getBoundingClientRect();
+      const toRect = toElem.getBoundingClientRect();
+      const editorRect = editor.getBoundingClientRect();
+
+      const startX = fromRect.right - editorRect.left;
+      const startY = fromRect.top + fromRect.height / 2 - editorRect.top;
+
+      const endX = toRect.left - editorRect.left;
+      const endY = toRect.top + toRect.height / 2 - editorRect.top;
+
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("stroke", "#00ffff");
+      path.setAttribute("stroke-width", "2");
+      path.setAttribute("fill", "none");
+
+      const controlX = (startX + endX) / 2;
+      const d = `M${startX},${startY} C${controlX},${startY} ${controlX},${endY} ${endX},${endY}`;
+      path.setAttribute("d", d);
+
+      svg.appendChild(path);
+    });
+  }
+
+  updateConnections();
+</script>
+
 </body>
 </html>
