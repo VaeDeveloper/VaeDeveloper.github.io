@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Simple UE-style Nodes</title>
+<title>UE-style Nodes with Connections and Editable Params</title>
 <style>
   body { margin: 0; background: #111; color: #eee; font-family: Arial, sans-serif; overflow: hidden; }
   #node-editor { width: 100vw; height: 100vh; background: #222; position: relative; overflow: hidden; }
@@ -11,12 +11,12 @@
     background: #333;
     border: 2px solid #00ffff;
     border-radius: 6px;
-    width: 160px;
+    width: 180px;
     padding: 10px;
     box-sizing: border-box;
     color: #ccc;
     user-select: none;
-    cursor: move;
+    cursor: default;
   }
   .node-header {
     font-weight: bold;
@@ -24,14 +24,38 @@
     color: #00ffff;
     border-bottom: 1px solid #00ffff;
     padding-bottom: 4px;
+    cursor: grab;
   }
-  .node-output, .node-input {
-    height: 20px;
+  .node-input, .node-output {
+    display: flex;
+    align-items: center;
+    height: 26px;
     background: #444;
     border-radius: 3px;
     margin: 5px 0;
-    padding: 3px 6px;
+    padding: 0 6px;
     font-size: 0.9em;
+    user-select: none;
+  }
+  .node-input {
+    justify-content: flex-start;
+  }
+  .node-output {
+    justify-content: flex-end;
+    cursor: pointer;
+  }
+  .param-input {
+    margin-left: 6px;
+    font-size: 0.9em;
+    border-radius: 3px;
+    border: none;
+    padding: 2px 4px;
+    width: 70px;
+  }
+  .param-input:focus {
+    outline: none;
+    background: #555;
+    color: #00ffff;
   }
   svg {
     position: absolute;
@@ -39,7 +63,6 @@
     overflow: visible;
     pointer-events: none;
   }
-  /* Лог окно снизу по центру */
   #log-window {
     position: fixed;
     bottom: 20px;
@@ -48,9 +71,9 @@
     width: 360px;
     max-height: 120px;
     background: rgba(0,0,0,0.7);
-    border: 1px solid #00ffff;
+    border: 1px solid #88888888;
     border-radius: 6px;
-    color: #00ffff;
+    color: #88888888;
     font-family: monospace;
     font-size: 12px;
     padding: 8px;
@@ -76,15 +99,21 @@
     logWindow.scrollTop = logWindow.scrollHeight;
   }
 
+  // Ноды с начальными параметрами (значения параметров можно редактировать)
   const nodesData = [
-    { id: 'node1', title: 'Add', x: 50, y: 50, inputs: ['A', 'B'], outputs: ['Result'] },
-    { id: 'node2', title: 'Multiply', x: 300, y: 150, inputs: ['X', 'Y'], outputs: ['Product'] },
-    { id: 'node3', title: 'Output', x: 600, y: 100, inputs: ['Value'], outputs: [] },
+    { id: 'node1', title: 'Add', x: 50, y: 50, inputs: [{name: 'A', value: '0'}, {name: 'B', value: '0'}], outputs: ['Result'] },
+    { id: 'node2', title: 'Multiply', x: 300, y: 150, inputs: [{name: 'X', value: '1'}, {name: 'Y', value: '1'}], outputs: ['Product'] },
+    { id: 'node3', title: 'Output', x: 600, y: 100, inputs: [{name: 'Value', value: ''}], outputs: [] },
   ];
 
+  // Храним связи
   let connections = [];
 
-  nodesData.forEach(({id, title, x, y, inputs, outputs}) => {
+  // Переменные для создания связи мышкой
+  let connecting = false;
+  let connectFrom = null; // { nodeId, outputIndex }
+
+  function createNode({id, title, x, y, inputs, outputs}) {
     const node = document.createElement('div');
     node.classList.add('node');
     node.style.left = x + 'px';
@@ -96,23 +125,8 @@
     header.textContent = title;
     node.appendChild(header);
 
-    inputs.forEach(input => {
-      const inputDiv = document.createElement('div');
-      inputDiv.classList.add('node-input');
-      inputDiv.textContent = input;
-      node.appendChild(inputDiv);
-    });
-
-    outputs.forEach(output => {
-      const outputDiv = document.createElement('div');
-      outputDiv.classList.add('node-output');
-      outputDiv.textContent = output;
-      node.appendChild(outputDiv);
-    });
-
-    // Drag functionality
+    // Драггинг ноды
     let dragOffsetX, dragOffsetY, dragging = false;
-
     header.style.cursor = 'grab';
     header.addEventListener('mousedown', e => {
       dragging = true;
@@ -120,8 +134,8 @@
       dragOffsetY = e.clientY - node.offsetTop;
       header.style.cursor = 'grabbing';
       printLog(`Started dragging node "${title}"`);
+      e.preventDefault();
     });
-
     window.addEventListener('mouseup', () => {
       if(dragging) {
         printLog(`Stopped dragging node "${title}"`);
@@ -129,7 +143,6 @@
       dragging = false;
       header.style.cursor = 'grab';
     });
-
     window.addEventListener('mousemove', e => {
       if (!dragging) return;
       node.style.left = (e.clientX - dragOffsetX) + 'px';
@@ -137,22 +150,115 @@
       updateConnections();
     });
 
+    // Входы с возможностью редактировать параметры
+    inputs.forEach(({name, value}, i) => {
+      const inputDiv = document.createElement('div');
+      inputDiv.classList.add('node-input');
+
+      const label = document.createElement('span');
+      label.textContent = name;
+      inputDiv.appendChild(label);
+
+      const inputField = document.createElement('input');
+      inputField.type = 'text';
+      inputField.value = value;
+      inputField.classList.add('param-input');
+      inputField.addEventListener('input', (e) => {
+        printLog(`Node ${id} input "${name}" changed to: ${e.target.value}`);
+        // Можно тут обновлять логику, если хочешь
+      });
+
+      inputDiv.appendChild(inputField);
+      node.appendChild(inputDiv);
+    });
+
+    // Выходы, кликабельные для создания связей
+    outputs.forEach((outputName, i) => {
+      const outputDiv = document.createElement('div');
+      outputDiv.classList.add('node-output');
+      outputDiv.textContent = outputName;
+
+      outputDiv.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if(connecting) {
+          printLog('Already connecting. Finish existing connection first.');
+          return;
+        }
+        connecting = true;
+        connectFrom = { nodeId: id, outputIndex: i };
+        printLog(`Started connection from node "${id}" output "${outputName}"`);
+      });
+
+      node.appendChild(outputDiv);
+    });
+
     editor.appendChild(node);
-  });
+  }
+
+  // Создаем все ноды
+  nodesData.forEach(createNode);
 
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svg.style.width = '100%';
   svg.style.height = '100%';
   editor.appendChild(svg);
 
+  // Обработчик клика по входам — завершить связь, если есть активное соединение
+  editor.addEventListener('click', e => {
+    if(!connecting) return;
+
+    // Ищем родителя входа
+    const inputDiv = e.target.closest('.node-input');
+    if(!inputDiv) return;
+
+    // Находим ноду и индекс входа
+    const toNode = inputDiv.parentElement;
+    const toId = toNode.id;
+    const toInputs = Array.from(toNode.querySelectorAll('.node-input'));
+    const toInputIndex = toInputs.indexOf(inputDiv);
+
+    if(toId === connectFrom.nodeId) {
+      printLog('Cannot connect node output to its own input.');
+      connecting = false;
+      connectFrom = null;
+      return;
+    }
+
+    // Добавляем связь
+    connections.push({
+      fromId: connectFrom.nodeId,
+      fromOutputIndex: connectFrom.outputIndex,
+      toId: toId,
+      toInputIndex: toInputIndex
+    });
+
+    printLog(`Connected node "${connectFrom.nodeId}" output #${connectFrom.outputIndex} to node "${toId}" input #${toInputIndex}`);
+
+    connecting = false;
+    connectFrom = null;
+
+    updateConnections();
+  });
+
+  // Удаление связи при клике на ней
+  svg.addEventListener('click', e => {
+    if(e.target.tagName === 'path') {
+      // Найдем индекс связи по атрибуту path (можно по позиции)
+      // Упростим: удаляем ту связь, чей путь был кликнут
+      // Для этого назначим data-index при рисовании
+      const index = parseInt(e.target.getAttribute('data-index'));
+      if(!isNaN(index)) {
+        const conn = connections[index];
+        printLog(`Removed connection from node "${conn.fromId}" to node "${conn.toId}"`);
+        connections.splice(index, 1);
+        updateConnections();
+      }
+    }
+  });
+
   function updateConnections() {
     svg.innerHTML = '';
-    connections = [
-      { fromId: 'node1', fromOutputIndex: 0, toId: 'node2', toInputIndex: 0 },
-      { fromId: 'node2', fromOutputIndex: 0, toId: 'node3', toInputIndex: 0 },
-    ];
-
-    connections.forEach(({fromId, fromOutputIndex, toId, toInputIndex}) => {
+    connections.forEach(({fromId, fromOutputIndex, toId, toInputIndex}, index) => {
       const fromNode = document.getElementById(fromId);
       const toNode = document.getElementById(toId);
 
@@ -178,10 +284,13 @@
       path.setAttribute("stroke", "#00ffff");
       path.setAttribute("stroke-width", "2");
       path.setAttribute("fill", "none");
+      path.style.cursor = 'pointer';
 
       const controlX = (startX + endX) / 2;
       const d = `M${startX},${startY} C${controlX},${startY} ${controlX},${endY} ${endX},${endY}`;
       path.setAttribute("d", d);
+
+      path.setAttribute('data-index', index);
 
       svg.appendChild(path);
     });
