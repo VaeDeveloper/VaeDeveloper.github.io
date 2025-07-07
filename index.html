@@ -18,11 +18,12 @@
   .container {
     max-width: 1400px;
     min-width: 320px;
-    margin: 140px auto 0;
+    margin: 160px auto 0;
     padding: 40px 40px 80px;
     user-select: none;
     min-height: 600px;
     box-sizing: border-box;
+    transition: margin 0.3s ease;
   }
 
   /* Контейнер для табов и арта */
@@ -34,6 +35,9 @@
     width: 260px;
     z-index: 20;
     user-select: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   /* Канвас - фон как у страницы, плюс свечение при наведении */
@@ -56,6 +60,7 @@
     gap: 20px;
     justify-content: flex-start;
     margin-top: 10px;
+    width: 100%;
   }
 
   .tab {
@@ -226,10 +231,11 @@
     }
 
     .container {
-      margin: 20px auto 0;
+      margin: 40px auto 0;
       padding: 20px 15px 80px;
       min-width: auto;
       min-height: auto;
+      transition: margin 0.3s ease;
     }
 
     .grid {
@@ -248,19 +254,19 @@
 <body>
 
   <div class="tabs-wrapper">
-    <div id="art-container">
+    <div id="art-container" aria-label="Generative art canvas" role="img">
       <canvas id="generative-art" width="260" height="260"></canvas>
     </div>
-    <div class="tabs">
-      <div class="tab active" data-tab="projects">Projects</div>
-      <div class="tab" data-tab="bio">Bio</div>
+    <div class="tabs" role="tablist">
+      <div class="tab active" data-tab="projects" role="tab" tabindex="0" aria-selected="true" aria-controls="projects">Projects</div>
+      <div class="tab" data-tab="bio" role="tab" tabindex="-1" aria-selected="false" aria-controls="bio">Bio</div>
     </div>
   </div>
 
-  <div class="container">
-    <div id="projects" class="content active">
+  <main class="container">
+    <section id="projects" class="content active" role="tabpanel" tabindex="0" aria-labelledby="projects">
       <div class="grid">
-        <div class="project">
+        <article class="project">
           <h2>NoiseGenerator</h2>
           <img src="NoiseGenerator.jpg" alt="Noise Generator" />
           <p>
@@ -270,9 +276,9 @@
             <a href="https://github.com/VaeDeveloper/NoiseGenerator" class="button" target="_blank" rel="noopener noreferrer">GitHub</a>
             <a href="https://github.com/VaeDeveloper/NoiseGenerator/releases" class="button" target="_blank" rel="noopener noreferrer">Download</a>
           </div>
-        </div>
+        </article>
 
-        <div class="project">
+        <article class="project">
           <h2>ORMTool</h2>
           <img src="ORMTool.jpg" alt="ORMTool" />
           <p>
@@ -282,9 +288,9 @@
             <a href="https://github.com/VaeDeveloper/ORMTool" class="button" target="_blank" rel="noopener noreferrer">GitHub</a>
             <a href="https://github.com/VaeDeveloper/ORMTool/releases" class="button" target="_blank" rel="noopener noreferrer">Download</a>
           </div>
-        </div>
+        </article>
 
-        <div class="project">
+        <article class="project">
           <h2>ValidatorX</h2>
           <img src="ValidatorX.jpg" alt="ValidatorX" />
           <p>
@@ -294,9 +300,9 @@
             <a href="https://github.com/VaeDeveloper/ValidatorX" class="button" target="_blank" rel="noopener noreferrer">GitHub</a>
             <a href="https://github.com/VaeDeveloper/ValidatorX/releases/tag/ValidatorX" class="button" target="_blank" rel="noopener noreferrer">Download</a>
           </div>
-        </div>
+        </article>
 
-        <div class="project">
+        <article class="project">
           <h2>ToolsProject</h2>
           <img src="ToolsProject.jpg" alt="Tools Project" />
           <p>
@@ -305,19 +311,19 @@
           <div class="buttons">
             <a href="https://github.com/VaeDeveloper/ToolsProject" class="button" target="_blank" rel="noopener noreferrer">GitHub</a>
           </div>
-        </div>
+        </article>
       </div>
-    </div>
+    </section>
 
-    <div id="bio" class="content">
+    <section id="bio" class="content" role="tabpanel" tabindex="0" aria-labelledby="bio">
       <h2>About Me</h2>
       <p>Hello! I'm VaeDeveloper, a passionate developer specialized in C++ and Unreal Engine tools. I love creating helpful and powerful editor utilities, plugins, and interactive applications.</p>
       <h3>Contact</h3>
       <p>Email: <a href="mailto:youremail@example.com" style="color:#00cccc;">youremail@example.com</a></p>
       <p>GitHub: <a href="https://github.com/VaeDeveloper" target="_blank" rel="noopener noreferrer" style="color:#00cccc;">https://github.com/VaeDeveloper</a></p>
       <p>Reddit: <a href="https://www.reddit.com/user/dalexdeb/submitted/" target="_blank" rel="noopener noreferrer" style="color:#00cccc;">https://www.reddit.com/user/dalexdeb/submitted/</a></p>
-    </div>
-  </div>
+    </section>
+  </main>
 
 <script>
   const tabs = document.querySelectorAll('.tab');
@@ -333,15 +339,23 @@
 
   tabs.forEach(tab => {
     tab.addEventListener('click', () => {
-      tabs.forEach(t => t.classList.remove('active'));
+      tabs.forEach(t => {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+        t.setAttribute('tabindex', '-1');
+      });
       tab.classList.add('active');
+      tab.setAttribute('aria-selected', 'true');
+      tab.setAttribute('tabindex', '0');
 
       if (tab.dataset.tab === 'projects') {
         projectsSection.classList.add('active');
         bioSection.classList.remove('active');
+        projectsSection.focus();
       } else if (tab.dataset.tab === 'bio') {
         bioSection.classList.add('active');
         projectsSection.classList.remove('active');
+        bioSection.focus();
       }
     });
   });
@@ -352,41 +366,47 @@
   const W = canvas.width;
   const H = canvas.height;
 
-  ctx.fillStyle = '#111111';
-  ctx.fillRect(0, 0, W, H);
+  function drawArt() {
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#111111';
+    ctx.fillRect(0, 0, W, H);
 
-  const centerX = W / 2;
-  const centerY = H / 2;
-  const radius = W / 2 - 1;
-
-  ctx.beginPath();
-  ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-  ctx.strokeStyle = 'rgba(255,255,255,0.05)';
-  ctx.lineWidth = 1;
-  ctx.stroke();
-
-  function randomPointInCircle(cx, cy, r) {
-    let x, y;
-    do {
-      x = Math.random() * (r * 2) - r;
-      y = Math.random() * (r * 2) - r;
-    } while (x * x + y * y > r * r);
-    return { x: cx + x, y: cy + y };
-  }
-
-  let linesCount = window.innerWidth <= 768 ? 300 : 800; // меньше линий на мобилках
-  ctx.strokeStyle = 'rgba(255,255,255,0.1)';
-  ctx.lineWidth = 0.5;
-
-  for (let i = 0; i < linesCount; i++) {
-    const p1 = randomPointInCircle(centerX, centerY, radius);
-    const p2 = randomPointInCircle(centerX, centerY, radius);
+    const centerX = W / 2;
+    const centerY = H / 2;
+    const radius = W / 2 - 1;
 
     ctx.beginPath();
-    ctx.moveTo(p1.x, p1.y);
-    ctx.lineTo(p2.x, p2.y);
+    ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+    ctx.lineWidth = 1;
     ctx.stroke();
+
+    function randomPointInCircle(cx, cy, r) {
+      let x, y;
+      do {
+        x = Math.random() * (r * 2) - r;
+        y = Math.random() * (r * 2) - r;
+      } while (x * x + y * y > r * r);
+      return { x: cx + x, y: cy + y };
+    }
+
+    let linesCount = window.innerWidth <= 768 ? 300 : 800;
+    ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+    ctx.lineWidth = 0.5;
+
+    for (let i = 0; i < linesCount; i++) {
+      const p1 = randomPointInCircle(centerX, centerY, radius);
+      const p2 = randomPointInCircle(centerX, centerY, radius);
+
+      ctx.beginPath();
+      ctx.moveTo(p1.x, p1.y);
+      ctx.lineTo(p2.x, p2.y);
+      ctx.stroke();
+    }
   }
+  drawArt();
+
+  window.addEventListener('resize', drawArt);
 
   // Анимация подписи
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -442,32 +462,6 @@
     signatureElem.style.opacity = "0";
     signatureElem.textContent = "";
     displayText.fill(' ');
-  });
-
-  window.addEventListener('resize', () => {
-    const Wnew = canvas.width;
-    const Hnew = canvas.height;
-    ctx.clearRect(0, 0, Wnew, Hnew);
-    ctx.fillStyle = '#111111';
-    ctx.fillRect(0, 0, Wnew, Hnew);
-    ctx.beginPath();
-    ctx.arc(Wnew / 2, Hnew / 2, Wnew / 2 - 1, 0, Math.PI * 2);
-    ctx.strokeStyle = 'rgba(255,255,255,0.05)';
-    ctx.lineWidth = 1;
-    ctx.stroke();
-
-    linesCount = window.innerWidth <= 768 ? 300 : 800;
-    ctx.strokeStyle = 'rgba(255,255,255,0.1)';
-    ctx.lineWidth = 0.5;
-
-    for (let i = 0; i < linesCount; i++) {
-      const p1 = randomPointInCircle(Wnew / 2, Hnew / 2, Wnew / 2 - 1);
-      const p2 = randomPointInCircle(Wnew / 2, Hnew / 2, Wnew / 2 - 1);
-      ctx.beginPath();
-      ctx.moveTo(p1.x, p1.y);
-      ctx.lineTo(p2.x, p2.y);
-      ctx.stroke();
-    }
   });
 </script>
 
