@@ -42,9 +42,7 @@
         nodes.push({
           x: Math.random() * width,
           y: Math.random() * height,
-          radius: 2 + Math.random() * 2,
-          dx: (Math.random() - 0.5) * 0.5,
-          dy: (Math.random() - 0.5) * 0.5
+          radius: 2 + Math.random() * 2
         });
       }
     }
@@ -90,12 +88,6 @@
         ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
         ctx.fillStyle = "#00ffff";
         ctx.fill();
-
-        // soft movement
-        n.x += n.dx;
-        n.y += n.dy;
-        if (n.x < 0 || n.x > width) n.dx *= -1;
-        if (n.y < 0 || n.y > height) n.dy *= -1;
       });
 
       requestAnimationFrame(draw);
