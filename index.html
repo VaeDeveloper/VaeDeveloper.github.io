@@ -2,394 +2,186 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>VaeDeveloper — Living Graph</title>
-<style>
-  html, body {
-    margin: 0;
-    background: #111111;
-    overflow: hidden;
-    height: 100%;
-  }
-  canvas {
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-  }
-  .nav {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  gap: 30px;
-  z-index: 10;
-}
+  <title>VaeDeveloper Projects</title>
+  <meta name="description" content="Project portfolio by VaeDeveloper" />
+  <style>
+    html, body {
+      margin: 0;
+      background-color: #111111;
+      color: #cccccc;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      height: 100%;
+    }
 
-.nav a {
-  font-family: 'Segoe UI', Tahoma, sans-serif;
-  color: #eeeeee;
-  text-decoration: none;
-  font-size: 1.2em;
-  padding: 10px 20px;
-  width: 120px;
-  text-align: center;
-  border: 1px solid #55555555;
-  border-radius: 5px;
-  transition: background 0.2s;
-  display: inline-block;
-}
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 60px 40px;
+      user-select: none;
+    }
 
-.nav a:hover {
-  background: #44444422;
-}
+    h1 {
+      text-align: center;
+      font-size: 3em;
+      margin-bottom: 2em;
+      color: #00ffff;
+      user-select: none;
+    }
 
-.signature {
-  position: fixed;
-  bottom: 50px;
-  left: 50px;
-  font-family: 'Segoe UI', Tahoma, sans-serif;
-  color: #888888;
-  font-size: 2em;
-  user-select: none;
-  pointer-events: none;
-  white-space: nowrap;
-  text-decoration: underline;
-}
-</style>
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 40px;
+    }
+
+    @media (max-width: 1000px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .project {
+      background-color: #1a1a1a;
+      border-radius: 16px;
+      padding: 30px 25px;
+      box-shadow: 0 0 16px rgba(255, 255, 255, 0.05);
+      display: flex;
+      flex-direction: column;
+      transition: box-shadow 0.3s ease;
+    }
+
+    .project:hover {
+      box-shadow: 0 0 30px rgba(255, 255, 255, 0.15);
+    }
+
+    .project h2 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      color: #cccccc;
+      font-size: 1.5em;
+      user-select: none;
+    }
+
+    .project img {
+      width: 100%;
+      height: auto;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      pointer-events: none;
+      user-select: none;
+      filter: brightness(0.9);
+    }
+
+    .project p {
+      font-size: 1em;
+      line-height: 1.7;
+      flex-grow: 1;
+      color: #aaa;
+      user-select: none;
+    }
+
+    .buttons {
+      margin-top: 25px;
+    }
+
+    .button {
+      display: inline-block;
+      margin-right: 10px;
+      padding: 10px 22px;
+      background-color: #333333;
+      color: #ddd;
+      font-weight: bold;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: background-color 0.2s;
+      user-select: none;
+      border: 1px solid #555555;
+    }
+
+    .button:hover {
+      background-color: #555555;
+    }
+
+    .footer {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 30px 40px 80px;
+      text-align: left;
+      border-top: 1px solid #222;
+      font-size: 1em;
+      color: #666;
+      user-select: none;
+    }
+
+    .footer a {
+      color: #cccccc;
+      text-decoration: none;
+      margin: 0 10px;
+      font-weight: bold;
+    }
+
+    .footer a:hover {
+      color: #eeeeee;
+    }
+  </style>
 </head>
 <body>
-  <canvas id="graph"></canvas>
+  <div class="container">
+    <h1>Personal Projects</h1>
+    <div class="grid">
+      <div class="project">
+        <h2>NoiseGenerator</h2>
+        <img src="NoiseGenerator.jpg" alt="Noise Generator" />
+        <p>
+          An interactive C++ desktop application for generating and visualizing procedural 2D noise with customizable parameters, real-time preview rendering, and flexible preset management.
+        </p>
+        <div class="buttons">
+          <a href="https://github.com/VaeDeveloper/NoiseGenerator" class="button" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a href="https://github.com/VaeDeveloper/NoiseGenerator/releases" class="button" target="_blank" rel="noopener noreferrer">Download</a>
+        </div>
+      </div>
 
-  <div class="nav">
-    <a href="#bio">Bio</a>
-    <a href="projects.html">Project</a>
-    <a href="#contact">Contact</a>
+      <div class="project">
+        <h2>ORMTool</h2>
+        <img src="ORMTool.jpg" alt="ORMTool" />
+        <p>
+          ORMTool is a lightweight C++ desktop application that generates ORM (Occlusion-Roughness-Metallic) texture maps by combining separate grayscale images. It provides real-time previews, supports both Unreal Engine and Unity formats, and uses a modern GUI built with Dear ImGui.
+        </p>
+        <div class="buttons">
+          <a href="https://github.com/VaeDeveloper/ORMTool" class="button" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a href="https://github.com/VaeDeveloper/ORMTool/releases" class="button" target="_blank" rel="noopener noreferrer">Download</a>
+        </div>
+      </div>
+
+      <div class="project">
+        <h2>ValidatorX</h2>
+        <img src="ValidatorX.jpg" alt="ValidatorX" />
+        <p>
+          ValidatorX is a modular plugin for Unreal Engine that automatically detects issues in Blueprints and helps maintain clean, performant, and error-free graphs.
+        </p>
+        <div class="buttons">
+          <a href="https://github.com/VaeDeveloper/ValidatorX" class="button" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a href="https://github.com/VaeDeveloper/ValidatorX/releases/tag/ValidatorX" class="button" target="_blank" rel="noopener noreferrer">Download</a>
+        </div>
+      </div>
+
+      <div class="project">
+        <h2>ToolsProject</h2>
+        <img src="ToolsProject.jpg" alt="Tools Project" />
+        <p>
+          A collection of powerful editor tools for Unreal Engine, built entirely with Slate. This project brings together several tools to improve content management, validation, and workflow efficiency inside the Unreal Editor.
+        </p>
+        <div class="buttons">
+          <a href="https://github.com/VaeDeveloper/ToolsProject" class="button" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div class="signature" id="signature"></div>
-
-  <script>
-    const canvas = document.getElementById("graph");
-    const ctx = canvas.getContext("2d");
-    let width = canvas.width = window.innerWidth;
-    let height = canvas.height = window.innerHeight;
-
-    const nodeCount = 170;
-    let nodes = [];
-    let connections = [];
-    let hoveredNodeIndex = null;
-
-    window.addEventListener('resize', () => {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-      createConnections();
-    });
-
-function createNodes() {
-  nodes = [];
-  for (let i = 0; i < nodeCount; i++) {
-    const dx = (Math.random() - 0.5) * 0.3;
-    const dy = (Math.random() - 0.5) * 0.3;
-
-    const radius = (i % 2 === 0) ? 2 + Math.random() * 2 : 3 + Math.random() * 3;
-    nodes.push({
-      x: Math.random() * width,
-      y: Math.random() * height,
-      dx: dx,
-      dy: dy,
-      initialDx: dx,
-      initialDy: dy,
-      radius: radius,
-      targetRadius: 0,
-      hasConnection: false
-    });
-  }
-}
-
-    function createConnections() {
-      connections = [];
-      nodes.forEach(n => n.hasConnection = false);
-
-      for (let i = 0; i < nodes.length; i++) {
-        let closest = null;
-        let closestDist = Infinity;
-
-        for (let j = 0; j < nodes.length; j++) {
-          if (i === j) continue;
-          const dx = nodes[i].x - nodes[j].x;
-          const dy = nodes[i].y - nodes[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-
-          if (dist < 180) {
-            connections.push([i, j]);
-            nodes[i].hasConnection = true;
-            nodes[j].hasConnection = true;
-          }
-
-          if (dist < closestDist) {
-            closestDist = dist;
-            closest = j;
-          }
-        }
-
-        if (!nodes[i].hasConnection || closestDist > 250) {
-          if (closest !== null) {
-            connections.push([i, closest]);
-            nodes[i].hasConnection = true;
-            nodes[closest].hasConnection = true;
-          }
-        }
-      }
-    }
-
-    function dynamicConnectionUpdate() {
-      connections = connections.filter(([i, j]) => {
-        const a = nodes[i];
-        const b = nodes[j];
-        const dx = a.x - b.x;
-        const dy = a.y - b.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        return dist < 300;
-      });
-
-      nodes.forEach((node, i) => {
-        const connected = new Set(connections.flat());
-        if (!connected.has(i)) {
-          let closest = null;
-          let closestDist = Infinity;
-          for (let j = 0; j < nodes.length; j++) {
-            if (i === j) continue;
-            const dx = nodes[i].x - nodes[j].x;
-            const dy = nodes[i].y - nodes[j].y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < closestDist) {
-              closestDist = dist;
-              closest = j;
-            }
-          }
-          if (closest !== null) {
-            connections.push([i, closest]);
-          }
-        }
-      });
-    }
-
-    canvas.addEventListener("mousemove", e => {
-      const rect = canvas.getBoundingClientRect();
-      const mx = e.clientX - rect.left;
-      const my = e.clientY - rect.top;
-      hoveredNodeIndex = null;
-      for (let i = 0; i < nodes.length; i++) {
-        const n = nodes[i];
-        const dx = mx - n.x;
-        const dy = my - n.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < n.radius + 5) {
-          hoveredNodeIndex = i;
-          break;
-        }
-      }
-    });
-
-    canvas.addEventListener("mousedown", e => {
-      const rect = canvas.getBoundingClientRect();
-      const mx = e.clientX - rect.left;
-      const my = e.clientY - rect.top;
-
-      for (let i = 0; i < nodes.length; i++) {
-        const n = nodes[i];
-        const dx = mx - n.x;
-        const dy = my - n.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < n.radius) {
-          nodes.splice(i, 1);
-          createConnections();
-          return;
-        }
-      }
-
-      nodes.forEach(n => {
-        const dx = n.x - mx;
-        const dy = n.y - my;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        const impulse = Math.max(0, 1 - dist / 150);
-        const angle = Math.atan2(dy, dx);
-        n.dx += Math.cos(angle) * impulse * 1.5;
-        n.dy += Math.sin(angle) * impulse * 1.5;
-        n.targetRadius = Math.min(50, n.radius + impulse * 5);
-      });
-    });
-
-    function applyNodeCollisions() {
-      for (let i = 0; i < nodes.length; i++) {
-        for (let j = i + 1; j < nodes.length; j++) {
-          const a = nodes[i];
-          const b = nodes[j];
-          const dx = b.x - a.x;
-          const dy = b.y - a.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          const minDist = a.radius + b.radius + 4;
-
-          if (dist < minDist && dist > 0) {
-            const overlap = (minDist - dist) / 2;
-            const nx = dx / dist;
-            const ny = dy / dist;
-            a.x -= nx * overlap;
-            a.y -= ny * overlap;
-            b.x += nx * overlap;
-            b.y += ny * overlap;
-
-            const damping = 0.05;
-            const ax = nx * damping;
-            const ay = ny * damping;
-            a.dx -= ax;
-            a.dy -= ay;
-            b.dx += ax;
-            b.dy += ay;
-          }
-        }
-      }
-    }
-
-    function draw() {
-      ctx.fillStyle = "#111111";
-      ctx.fillRect(0, 0, width, height);
-
-      dynamicConnectionUpdate();
-
-      connections.forEach(([i, j]) => {
-        const a = nodes[i];
-        const b = nodes[j];
-        ctx.beginPath();
-        ctx.moveTo(a.x, a.y);
-        ctx.lineTo(b.x, b.y);
-        ctx.strokeStyle = (hoveredNodeIndex === i || hoveredNodeIndex === j) ? "#ffffff" : "#888888";
-        ctx.lineWidth = (hoveredNodeIndex === i || hoveredNodeIndex === j) ? 1.5 : 1;
-        ctx.stroke();
-      });
-
-      applyNodeCollisions();
-
-      nodes.forEach((n, index) => {
-        if (!n.hasConnection) return;
-
-        if (n.targetRadius > 0) {
-          const maxRadius = 50;
-          n.radius += (Math.min(maxRadius, n.targetRadius) - n.radius) * 0.1;
-          if (Math.abs(n.targetRadius - n.radius) < 0.1) {
-            n.targetRadius = 0;
-          }
-        } else {
-          const base = 2.5;
-          n.radius += (base - n.radius) * 0.05;
-        }
-
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
-        ctx.fillStyle = (hoveredNodeIndex === index) ? "#ffffff" : "#cccccc";
-        ctx.fill();
-
-        n.x += n.dx;
-        n.y += n.dy;
-
-        n.dx += (n.initialDx - n.dx) * 0.01;
-        n.dy += (n.initialDy - n.dy) * 0.01;
-
-        if (n.x < 10) {
-          n.x = 10;
-          n.dx = Math.abs(n.dx) + 0.5;
-          n.targetRadius = n.radius + 4;
-        } else if (n.x > width - 10) {
-          n.x = width - 10;
-          n.dx = -Math.abs(n.dx) - 0.5;
-          n.targetRadius = n.radius + 4;
-        }
-
-        if (n.y < 10) {
-          n.y = 10;
-          n.dy = Math.abs(n.dy) + 0.5;
-          n.targetRadius = n.radius + 4;
-        } else if (n.y > height - 10) {
-          n.y = height - 10;
-          n.dy = -Math.abs(n.dy) - 0.5;
-          n.targetRadius = n.radius + 4;
-        }
-      });
-
-     
-      const navLinks = document.querySelectorAll('.nav a');
-      const linkRects = Array.from(navLinks).map(link => link.getBoundingClientRect());
-
-      nodes.forEach((n) => {
-        linkRects.forEach(rect => {
-          if (
-            n.x > rect.left && n.x < rect.right &&
-            n.y > rect.top && n.y < rect.bottom
-          ) {
-            const cx = (rect.left + rect.right) / 2;
-            const cy = (rect.top + rect.bottom) / 2;
-            const dx = n.x - cx;
-            const dy = n.y - cy;
-            const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-            const force = 2;
-            n.dx += (dx / dist) * force;
-            n.dy += (dy / dist) * force;
-            n.targetRadius = n.radius + 4;
-          }
-        });
-      });
-
-      requestAnimationFrame(draw);
-    }
-
-    createNodes();
-    createConnections();
-    draw();
-
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-const signatureText = "0xToolset";
-const signatureElem = document.getElementById("signature");
-
-let index = 0;
-let displayText = Array(signatureText.length).fill(' ');
-
-function randomChar() {
-  return chars.charAt(Math.floor(Math.random() * chars.length));
-}
-
-function animateChar(i) {
-  if (i >= signatureText.length) {
-
-    setTimeout(() => {
-      index = 0;
-      displayText.fill(' ');
-      animateChar(0);
-    }, 4000);
-    return;
-  }
-
-  let iterations = 0;
-  const maxIterations = 15; 
-
-  function frame() {
-    if (iterations < maxIterations) {
-      displayText[i] = randomChar();
-      signatureElem.textContent = displayText.join('');
-      iterations++;
-      setTimeout(frame, 75);
-    } else {
-     
-      displayText[i] = signatureText[i];
-      signatureElem.textContent = displayText.join('');
-      animateChar(i + 1); 
-    }
-  }
-
-  frame();
-}
-
-animateChar(0);
-  </script>
+  <div class="footer">
+    <h3>More Links</h3>
+    <a href="https://github.com/VaeDeveloper" target="_blank" rel="noopener noreferrer">GitHub Profile</a> ·
+    <a href="https://www.reddit.com/user/dalexdeb/submitted/" target="_blank" rel="noopener noreferrer">Reddit</a>
+  </div>
 </body>
 </html>
