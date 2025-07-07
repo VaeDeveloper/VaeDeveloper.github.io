@@ -27,21 +27,25 @@
   /* Контейнер для табов и арта */
   .tabs-wrapper {
     position: fixed;
-    top: 140px; /* Выровнять по верху с NoiseGenerator */
+    top: 160px; /* подвинул ниже, чтобы совпадало с верхом NoiseGenerator */
     left: 15%;
     transform: translateX(-50%);
     width: 260px;
     z-index: 20;
   }
 
-  /* Канвас - убираем свечение */
+  /* Канвас - фон как у страницы, плюс свечение при наведении */
   #art-container {
     width: 260px;
     height: 260px;
-    background-color: #222;
+    background-color: #111111; /* фон страницы */
     border-radius: 0;
-    box-shadow: none; /* убрал свечение */
+    box-shadow: none;
     user-select: none;
+    transition: box-shadow 0.3s ease;
+  }
+  #art-container:hover {
+    box-shadow: 0 0 10px 2px rgba(200, 200, 200, 0.3); /* лёгкое серое свечение */
   }
 
   .tabs {
@@ -265,7 +269,7 @@
   const H = canvas.height;
 
   // Очистка и фон
-  ctx.fillStyle = '#222';
+  ctx.fillStyle = '#111111'; // фон страницы
   ctx.fillRect(0, 0, W, H);
 
   // Рисуем большой круг границы
