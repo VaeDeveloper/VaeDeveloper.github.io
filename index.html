@@ -346,26 +346,49 @@ function createNodes() {
     createConnections();
     draw();
 
-    // Анимация набора подписи
-    const signatureText = "0xToolset";
-    const signatureElem = document.getElementById("signature");
-    let index = 0;
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+const signatureText = "0xToolset";
+const signatureElem = document.getElementById("signature");
 
-    function typeSignature() {
-      if (index <= signatureText.length) {
-        signatureElem.textContent = signatureText.slice(0, index);
-        index++;
-        setTimeout(typeSignature, 150);
-      } else {
-        setTimeout(() => {
-          index = 0;
-          signatureElem.textContent = "";
-          setTimeout(typeSignature, 500);
-        }, 2000);
-      }
+let index = 0;
+let displayText = Array(signatureText.length).fill(' ');
+
+function randomChar() {
+  return chars.charAt(Math.floor(Math.random() * chars.length));
+}
+
+function animateChar(i) {
+  if (i >= signatureText.length) {
+
+    setTimeout(() => {
+      index = 0;
+      displayText.fill(' ');
+      animateChar(0);
+    }, 3000);
+    return;
+  }
+
+  let iterations = 0;
+  const maxIterations = 15; // сколько раз менять символ перед фиксацией
+
+  function frame() {
+    if (iterations < maxIterations) {
+      displayText[i] = randomChar();
+      signatureElem.textContent = displayText.join('');
+      iterations++;
+      setTimeout(frame, 50); // скорость перебора символов
+    } else {
+      // Зафиксировать правильный символ
+      displayText[i] = signatureText[i];
+      signatureElem.textContent = displayText.join('');
+      animateChar(i + 1); // перейти к следующему символу
     }
+  }
 
-    typeSignature();
+  frame();
+}
+
+animateChar(0);
   </script>
 </body>
 </html>
