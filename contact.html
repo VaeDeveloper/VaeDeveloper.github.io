@@ -1,86 +1,167 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>Drawflow Stylish Nodes</title>
-<link rel="stylesheet" href="https://unpkg.com/drawflow/dist/drawflow.min.css" />
-<style>
-  body, html {
-    margin: 0; padding: 0; height: 100%;
-    background: #111;
-  }
-  #drawflow {
-    width: 100vw; height: 100vh;
-  }
-
-  /* Кастомный стиль для нод */
-  .drawflow-node {
-    background: #222;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
-    color: #0ff;
-    font-family: 'Segoe UI', Tahoma, sans-serif;
-    padding: 15px;
-    min-width: 180px;
-    user-select: none;
-  }
-  .drawflow-node p {
-    margin: 0 0 10px;
-    font-weight: bold;
-    font-size: 1.1em;
-    text-align: center;
-  }
-  .drawflow-node .inputs, .drawflow-node .outputs {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 10px;
-  }
-  .drawflow-node .input, .drawflow-node .output {
-    width: 12px;
-    height: 12px;
-    background: #00ffff;
-    border-radius: 50%;
-    cursor: pointer;
-    box-shadow: 0 0 5px #00ffff;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <title>UE-style Node Editor with Rete.js</title>
+  <style>
+    body, html {
+      margin: 0; height: 100%; background: #111;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      overflow: hidden;
+      user-select: none;
+    }
+    #rete {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+    .node {
+      background: #222;
+      border-radius: 8px;
+      box-shadow: 0 0 10px #00ffff88;
+      color: #eee;
+      overflow: hidden;
+      user-select: none;
+    }
+    .node .title {
+      background: #007f7f;
+      padding: 8px 15px;
+      font-weight: bold;
+      font-size: 1.1em;
+      border-bottom: 1px solid #00ffffaa;
+      text-align: center;
+      color: #00ffff;
+      text-shadow: 0 0 5px #00ffffcc;
+    }
+    .node .inputs, .node .outputs {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 10px 15px;
+    }
+    .socket {
+      width: 14px; height: 14px;
+      background: #00cccc;
+      border-radius: 50%;
+      box-shadow: 0 0 5px #00ccccaa;
+      cursor: pointer;
+    }
+    .socket:hover {
+      box-shadow: 0 0 12px #00ffffee;
+      background: #00ffff;
+    }
+    /* Connection path */
+    path.connection {
+      stroke: #00ffffcc;
+      stroke-width: 3;
+      fill: none;
+      filter: drop-shadow(0 0 3px #00ffff88);
+    }
+  </style>
 </head>
 <body>
+  <div id="rete"></div>
 
-<div id="drawflow"></div>
+  <!-- Rete.js + dependencies -->
+  <script src="https://unpkg.com/rete@1.4.4/build/rete.min.js"></script>
+  <script src="https://unpkg.com/rete-area-plugin@0.2.1/build/area-plugin.min.js"></script>
+  <script src="https://unpkg.com/rete-connection-plugin@0.9.0/build/connection-plugin.min.js"></script>
+  <script src="https://unpkg.com/rete-vue-render-plugin@0.5.1/build/vue-render-plugin.min.js"></script>
 
-<script src="https://unpkg.com/drawflow/dist/drawflow.min.js"></script>
-<script>
-  const editor = new Drawflow(document.getElementById('drawflow'));
-  editor.start();
+  <script>
+    // Basic Socket for connections
+    const numSocket = new Rete.Socket('Number value');
 
-  editor.addNode('Node 1', 1, 1, 100, 100, 'node1', {}, `
-    <div>
-      <p>Node 1</p>
-      <div class="inputs">
-        <div class="input" data-input="input_1"></div>
-      </div>
-      <div class="outputs">
-        <div class="output" data-output="output_1"></div>
-      </div>
-    </div>
-  `);
+    // Simple Number Control (to enter numbers)
+    class NumControl extends Rete.Control {
+      constructor(emitter, key, readonly) {
+        super(key);
+        this.emitter = emitter;
+        this.key = key;
+        this.template = `<input type="number" :readonly="readonly" :value="value" @input="change($event)" />`;
+        this.scope = { value: 0, readonly };
+      }
 
-  editor.addNode('Node 2', 1, 1, 400, 100, 'node2', {}, `
-    <div>
-      <p>Node 2</p>
-      <div class="inputs">
-        <div class="input" data-input="input_1"></div>
-      </div>
-      <div class="outputs">
-        <div class="output" data-output="output_1"></div>
-      </div>
-    </div>
-  `);
+      setValue(val) {
+        this.scope.value = val;
+        this.update();
+      }
 
-  editor.addConnection('node1', 'output_1', 'node2', 'input_1');
-</script>
+      change(e) {
+        this.scope.value = +e.target.value;
+        this.update();
+        this.emitter.trigger('process');
+      }
 
+      update() {
+        this.putData(this.key, this.scope.value);
+        this.updateView();
+      }
+    }
+
+    // Number Node
+    class NumComponent extends Rete.Component {
+      constructor() {
+        super('Number');
+      }
+
+      builder(node) {
+        const out = new Rete.Output('num', 'Number', numSocket);
+        return node.addControl(new NumControl(this.editor, 'num')).addOutput(out);
+      }
+
+      worker(node, inputs, outputs) {
+        outputs['num'] = node.data.num;
+      }
+    }
+
+    // Add Node: sums two numbers
+    class AddComponent extends Rete.Component {
+      constructor() {
+        super('Add');
+      }
+
+      builder(node) {
+        const inp1 = new Rete.Input('num1', 'Number 1', numSocket);
+        const inp2 = new Rete.Input('num2', 'Number 2', numSocket);
+        const out = new Rete.Output('num', 'Number', numSocket);
+
+        return node.addInput(inp1).addInput(inp2).addOutput(out);
+      }
+
+      worker(node, inputs, outputs) {
+        const n1 = inputs['num1'].length ? inputs['num1'][0] : node.data.num1 || 0;
+        const n2 = inputs['num2'].length ? inputs['num2'][0] : node.data.num2 || 0;
+        outputs['num'] = n1 + n2;
+      }
+    }
+
+    async function createEditor(container) {
+      const components = [new NumComponent(), new AddComponent()];
+
+      const editor = new Rete.NodeEditor('demo@0.1.0', container);
+      editor.use(ConnectionPlugin.default);
+      editor.use(AreaPlugin);
+      editor.use(VueRenderPlugin.default);
+
+      components.forEach(c => editor.register(c));
+
+      editor.on('process nodecreated noderemoved connectioncreated connectionremoved', async () => {
+        await engine.abort();
+        await engine.process(editor.toJSON());
+      });
+
+      const engine = new Rete.Engine('demo@0.1.0');
+      components.forEach(c => engine.register(c));
+
+      await editor.view.resize();
+      AreaPlugin.zoomAt(editor);
+      editor.trigger('process');
+
+      return editor;
+    }
+
+    createEditor(document.getElementById('rete'));
+  </script>
 </body>
 </html>
