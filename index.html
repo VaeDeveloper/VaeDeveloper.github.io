@@ -71,24 +71,26 @@
       createConnections();
     });
 
-    function createNodes() {
-      nodes = [];
-      for (let i = 0; i < nodeCount; i++) {
-        const dx = (Math.random() - 0.5) * 0.3;
-        const dy = (Math.random() - 0.5) * 0.3;
-        nodes.push({
-          x: Math.random() * width,
-          y: Math.random() * height,
-          dx: dx,
-          dy: dy,
-          initialDx: dx,
-          initialDy: dy,
-          radius: 2 + Math.random() * 2,
-          targetRadius: 0,
-          hasConnection: false
-        });
-      }
-    }
+function createNodes() {
+  nodes = [];
+  for (let i = 0; i < nodeCount; i++) {
+    const dx = (Math.random() - 0.5) * 0.3;
+    const dy = (Math.random() - 0.5) * 0.3;
+
+    const radius = (i % 2 === 0) ? 2 + Math.random() * 2 : 3 + Math.random() * 3;
+    nodes.push({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      dx: dx,
+      dy: dy,
+      initialDx: dx,
+      initialDy: dy,
+      radius: radius,
+      targetRadius: 0,
+      hasConnection: false
+    });
+  }
+}
 
     function createConnections() {
       connections = [];
