@@ -2,30 +2,34 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Generative Mesh (Smooth)</title>
+  <title>VaeDeveloper</title>
   <style>
-    html, body {
+    body {
       margin: 0;
       background: #0d0d0d;
       overflow: hidden;
-      height: 100%;
       display: flex;
       justify-content: center;
       align-items: center;
+      flex-direction: column;
+      height: 100vh;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
     }
     canvas {
       display: block;
+      cursor: none;
     }
     .button {
-      position: absolute;
-      bottom: 40px;
-      padding: 12px 24px;
-      background: #00ffff;
+      margin-top: 40px;
+      padding: 14px 28px;
+      font-size: 1em;
+      background-color: #00ffff;
       color: #000;
       font-weight: bold;
       text-decoration: none;
       border-radius: 6px;
       transition: background-color 0.2s;
+      z-index: 1;
     }
     .button:hover {
       background-color: #00cccc;
@@ -33,84 +37,45 @@
   </style>
 </head>
 <body>
-  <canvas id="canvas" width="800" height="800"></canvas>
+  <canvas id="circle" width="700" height="700"></canvas>
   <a class="button" href="projects.html">View Projects</a>
 
   <script>
-    const canvas = document.getElementById("canvas");
+    const canvas = document.getElementById("circle");
     const ctx = canvas.getContext("2d");
-    const w = canvas.width;
-    const h = canvas.height;
-    const center = { x: w / 2, y: h / 2 };
-    const radius = w * 0.45;
-    const pointsCount = 300;
-    const points = [];
+    const center = canvas.width / 2;
+    const radius = center * 0.95;
+    const points = 200;
 
-    let mouseInfluence = 0.5;
-    let connections = [];
-
-    for (let i = 0; i < pointsCount; i++) {
-      const angle = (2 * Math.PI * i) / pointsCount;
-      points.push({
-        x: center.x + radius * Math.cos(angle),
-        y: center.y + radius * Math.sin(angle)
-      });
-    }
-
-    canvas.addEventListener("mousemove", (e) => {
-      const rect = canvas.getBoundingClientRect();
-      const mx = e.clientX - rect.left;
-      const dx = mx - center.x;
-      const norm = Math.max(-1, Math.min(1, dx / (w / 2)));
-      mouseInfluence = 0.05 + 0.95 * (norm + 1) / 2;
-    });
-
-    // плавно обновляем соединения (с fade эффектом)
-    function generateConnections(probability) {
-      const conns = [];
-      for (let i = 0; i < points.length; i++) {
-        for (let j = i + 1; j < points.length; j++) {
-          if (Math.random() < probability) {
-            conns.push({ a: i, b: j, alpha: 0 }); // alpha для fade-in
-          }
-        }
-      }
-      return conns;
-    }
-
-    // каждые 4 секунды — новое поколение соединений
-    setInterval(() => {
-      connections = generateConnections(mouseInfluence * 0.015);
-    }, 4000);
-
-    function draw() {
-      // тёмная заливка с альфой — для "шлейфа"
-      ctx.fillStyle = "rgba(13, 13, 13, 0.15)";
-      ctx.fillRect(0, 0, w, h);
-
+    function drawFrame(time) {
+      ctx.fillStyle = "#0d0d0d";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.strokeStyle = "white";
       ctx.lineWidth = 0.2;
 
-      for (let i = 0; i < connections.length; i++) {
-        const { a, b } = connections[i];
+      // создаём «хаос» с помощью синуса времени
+      const mod = 2 + Math.sin(time * 0.001) * 3 + Math.sin(time * 0.0007) * 2;
 
-        // Медленно "включаем" линию
-        if (connections[i].alpha < 1) {
-          connections[i].alpha += 0.01;
-        }
+      for (let i = 0; i < points; i++) {
+        const angle1 = (2 * Math.PI * i) / points;
+        const j = (i * mod + Math.sin(time * 0.0003 + i) * 10) % points;
+        const angle2 = (2 * Math.PI * j) / points;
 
-        ctx.globalAlpha = connections[i].alpha;
+        const x1 = center + radius * Math.cos(angle1);
+        const y1 = center + radius * Math.sin(angle1);
+        const x2 = center + radius * Math.cos(angle2);
+        const y2 = center + radius * Math.sin(angle2);
+
         ctx.beginPath();
-        ctx.moveTo(points[a].x, points[a].y);
-        ctx.lineTo(points[b].x, points[b].y);
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
         ctx.stroke();
       }
 
-      ctx.globalAlpha = 1;
-      requestAnimationFrame(draw);
+      requestAnimationFrame(drawFrame);
     }
 
-    draw();
+    drawFrame(0);
   </script>
 </body>
 </html>
