@@ -6,7 +6,7 @@
   <style>
     html, body {
       margin: 0;
-      background: #1a1a1a;
+      background: #111111;
       overflow: hidden;
       height: 100%;
     }
@@ -27,16 +27,16 @@
     }
     .nav a {
       font-family: 'Segoe UI', Tahoma, sans-serif;
-      color: #cccccc;
+      color: #eeeeee;
       text-decoration: none;
       font-size: 1.2em;
       padding: 10px 20px;
-      border: 1px solid #99999955;
+      border: 1px solid #55555555;
       border-radius: 5px;
       transition: background 0.2s;
     }
     .nav a:hover {
-      background: #99999922;
+      background: #44444422;
     }
   </style>
 </head>
@@ -207,7 +207,7 @@
         ctx.beginPath();
         ctx.moveTo(a.x, a.y);
         ctx.lineTo(b.x, b.y);
-        ctx.strokeStyle = (hoveredNodeIndex === i || hoveredNodeIndex === j) ? "#dddddd" : "#666";
+        ctx.strokeStyle = (hoveredNodeIndex === i || hoveredNodeIndex === j) ? "#ffffff" : "#888888";
         ctx.lineWidth = (hoveredNodeIndex === i || hoveredNodeIndex === j) ? 1.5 : 1;
         ctx.stroke();
       });
