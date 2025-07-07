@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <title>Simple UE-style Nodes</title>
 <style>
-  body { margin: 0; background: #111; color: #eee; font-family: Arial, sans-serif; }
+  body { margin: 0; background: #111; color: #eee; font-family: Arial, sans-serif; overflow: hidden; }
   #node-editor { width: 100vw; height: 100vh; background: #222; position: relative; overflow: hidden; }
   .node {
     position: absolute;
@@ -33,23 +33,48 @@
     padding: 3px 6px;
     font-size: 0.9em;
   }
-  .connections {
-    position: absolute;
-    pointer-events: none;
-  }
   svg {
     position: absolute;
     top: 0; left: 0;
     overflow: visible;
+    pointer-events: none;
+  }
+  /* Лог окно снизу по центру */
+  #log-window {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 360px;
+    max-height: 120px;
+    background: rgba(0,0,0,0.7);
+    border: 1px solid #00ffff;
+    border-radius: 6px;
+    color: #00ffff;
+    font-family: monospace;
+    font-size: 12px;
+    padding: 8px;
+    overflow-y: auto;
+    box-sizing: border-box;
+    user-select: text;
+    z-index: 1000;
   }
 </style>
 </head>
 <body>
 
 <div id="node-editor"></div>
+<div id="log-window"></div>
 
 <script>
   const editor = document.getElementById('node-editor');
+  const logWindow = document.getElementById('log-window');
+
+  function printLog(msg) {
+    const time = new Date().toLocaleTimeString();
+    logWindow.innerHTML += `[${time}] ${msg}<br>`;
+    logWindow.scrollTop = logWindow.scrollHeight;
+  }
 
   const nodesData = [
     { id: 'node1', title: 'Add', x: 50, y: 50, inputs: ['A', 'B'], outputs: ['Result'] },
@@ -59,7 +84,6 @@
 
   let connections = [];
 
-  // Create nodes
   nodesData.forEach(({id, title, x, y, inputs, outputs}) => {
     const node = document.createElement('div');
     node.classList.add('node');
@@ -95,9 +119,13 @@
       dragOffsetX = e.clientX - node.offsetLeft;
       dragOffsetY = e.clientY - node.offsetTop;
       header.style.cursor = 'grabbing';
+      printLog(`Started dragging node "${title}"`);
     });
 
     window.addEventListener('mouseup', () => {
+      if(dragging) {
+        printLog(`Stopped dragging node "${title}"`);
+      }
       dragging = false;
       header.style.cursor = 'grab';
     });
@@ -112,7 +140,6 @@
     editor.appendChild(node);
   });
 
-  // SVG for connections
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svg.style.width = '100%';
   svg.style.height = '100%';
@@ -120,7 +147,6 @@
 
   function updateConnections() {
     svg.innerHTML = '';
-    // For demo, connect node1 output to node2 input and node2 output to node3 input
     connections = [
       { fromId: 'node1', fromOutputIndex: 0, toId: 'node2', toInputIndex: 0 },
       { fromId: 'node2', fromOutputIndex: 0, toId: 'node3', toInputIndex: 0 },
