@@ -195,7 +195,7 @@ transform: translate(-50%, -50%);
         const angle = Math.atan2(dy, dx);
         n.dx += Math.cos(angle) * impulse * 1.5;
         n.dy += Math.sin(angle) * impulse * 1.5;
-        n.targetRadius = Math.min(50, n.radius + impulse * 5);
+        n.targetRadius = Math.min(15, n.radius + impulse * 3);
       });
     });
 
