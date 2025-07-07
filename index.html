@@ -64,7 +64,6 @@
     resize();
 
     const lines = 40;
-    const spacing = 30;
 
     function draw(time) {
       ctx.clearRect(0, 0, width, height);
@@ -73,9 +72,11 @@
 
       for (let i = 0; i < lines; i++) {
         ctx.beginPath();
+        const baseAmp = height * 0.4; // увеличиваем амплитуду до 80% от высоты
+        const amp = baseAmp * (0.3 + Math.sin(i + time * 0.001) * 0.7);
+        const freq = 0.002 + (i % 4) * 0.0015;
+
         for (let x = 0; x < width; x += 4) {
-          const freq = 0.005 + (i % 4) * 0.002; // разная частота
-          const amp = spacing * (0.5 + Math.sin(i + time * 0.001) * 0.5); // живая амплитуда
           const y = height / 2 + Math.sin(x * freq + time * 0.001 + i) * amp;
           if (x === 0) ctx.moveTo(x, y);
           else ctx.lineTo(x, y);
@@ -89,4 +90,4 @@
     draw(0);
   </script>
 </body>
-</html>
+</
