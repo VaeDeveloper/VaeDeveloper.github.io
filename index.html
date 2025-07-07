@@ -5,6 +5,7 @@
 <title>VaeDeveloper Projects & Bio</title>
 <meta name="description" content="Project portfolio by VaeDeveloper" />
 <style>
+  /* ... все стили те же, как я присылал ранее ... */
   html, body {
     margin: 0;
     background-color: #111111;
@@ -21,15 +22,14 @@
     user-select: none;
   }
 
-  /* Вкладки */
   .tabs {
     position: fixed;
     top: 20px;
-    left: 55%; /* немного правее центра */
+    left: 55%;
     transform: translateX(-50%);
     display: flex;
     gap: 20px;
-    width: 260px; /* ширина под две кнопки по 120px + gap */
+    width: 260px;
     justify-content: space-between;
     z-index: 10;
   }
@@ -56,7 +56,6 @@
     border-color: #00cccc;
   }
 
-  /* Проекты */
   .grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -131,7 +130,6 @@
     background-color: #555555;
   }
 
-  /* Биография и контакты */
   .bio {
     color: #cccccc;
     font-size: 1.1em;
@@ -145,7 +143,6 @@
     display: block;
   }
 
-  /* Футер */
   .footer {
     max-width: 1400px;
     margin: 0 auto;
@@ -178,54 +175,7 @@
 
   <div class="container">
     <div id="projects" class="content active">
-      <div class="grid">
-        <div class="project">
-          <h2>NoiseGenerator</h2>
-          <img src="NoiseGenerator.jpg" alt="Noise Generator" />
-          <p>
-            An interactive C++ desktop application for generating and visualizing procedural 2D noise with customizable parameters, real-time preview rendering, and flexible preset management.
-          </p>
-          <div class="buttons">
-            <a href="https://github.com/VaeDeveloper/NoiseGenerator" class="button" target="_blank" rel="noopener noreferrer">GitHub</a>
-            <a href="https://github.com/VaeDeveloper/NoiseGenerator/releases" class="button" target="_blank" rel="noopener noreferrer">Download</a>
-          </div>
-        </div>
-
-        <div class="project">
-          <h2>ORMTool</h2>
-          <img src="ORMTool.jpg" alt="ORMTool" />
-          <p>
-            ORMTool is a lightweight C++ desktop application that generates ORM (Occlusion-Roughness-Metallic) texture maps by combining separate grayscale images. It provides real-time previews, supports both Unreal Engine and Unity formats, and uses a modern GUI built with Dear ImGui.
-          </p>
-          <div class="buttons">
-            <a href="https://github.com/VaeDeveloper/ORMTool" class="button" target="_blank" rel="noopener noreferrer">GitHub</a>
-            <a href="https://github.com/VaeDeveloper/ORMTool/releases" class="button" target="_blank" rel="noopener noreferrer">Download</a>
-          </div>
-        </div>
-
-        <div class="project">
-          <h2>ValidatorX</h2>
-          <img src="ValidatorX.jpg" alt="ValidatorX" />
-          <p>
-            ValidatorX is a modular plugin for Unreal Engine that automatically detects issues in Blueprints and helps maintain clean, performant, and error-free graphs.
-          </p>
-          <div class="buttons">
-            <a href="https://github.com/VaeDeveloper/ValidatorX" class="button" target="_blank" rel="noopener noreferrer">GitHub</a>
-            <a href="https://github.com/VaeDeveloper/ValidatorX/releases/tag/ValidatorX" class="button" target="_blank" rel="noopener noreferrer">Download</a>
-          </div>
-        </div>
-
-        <div class="project">
-          <h2>ToolsProject</h2>
-          <img src="ToolsProject.jpg" alt="Tools Project" />
-          <p>
-            A collection of powerful editor tools for Unreal Engine, built entirely with Slate. This project brings together several tools to improve content management, validation, and workflow efficiency inside the Unreal Editor.
-          </p>
-          <div class="buttons">
-            <a href="https://github.com/VaeDeveloper/ToolsProject" class="button" target="_blank" rel="noopener noreferrer">GitHub</a>
-          </div>
-        </div>
-      </div>
+      <!-- Твои проекты сюда (как в прошлом коде) -->
     </div>
 
     <div id="bio" class="bio">
@@ -245,24 +195,24 @@
   </div>
 
 <script>
-  const tabs = document.querySelectorAll('.tab');
-  const projectsSection = document.getElementById('projects');
-  const bioSection = document.getElementById('bio');
+  document.addEventListener('DOMContentLoaded', () => {
+    const tabs = document.querySelectorAll('.tab');
+    const projectsSection = document.getElementById('projects');
+    const bioSection = document.getElementById('bio');
 
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      // Снимаем активность со всех вкладок
-      tabs.forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
 
-      // Показываем/скрываем соответствующие секции
-      if (tab.dataset.tab === 'projects') {
-        projectsSection.classList.add('active');
-        bioSection.classList.remove('active');
-      } else if (tab.dataset.tab === 'bio') {
-        bioSection.classList.add('active');
-        projectsSection.classList.remove('active');
-      }
+        if (tab.dataset.tab === 'projects') {
+          projectsSection.classList.add('active');
+          bioSection.classList.remove('active');
+        } else if (tab.dataset.tab === 'bio') {
+          bioSection.classList.add('active');
+          projectsSection.classList.remove('active');
+        }
+      });
     });
   });
 </script>
