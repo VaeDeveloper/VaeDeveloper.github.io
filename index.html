@@ -6,7 +6,7 @@
   <style>
     html, body {
       margin: 0;
-      background: #0d0d0d;
+      background: #1a1a1a;
       overflow: hidden;
       height: 100%;
     }
@@ -27,16 +27,16 @@
     }
     .nav a {
       font-family: 'Segoe UI', Tahoma, sans-serif;
-      color: #00ffff;
+      color: #cccccc;
       text-decoration: none;
       font-size: 1.2em;
       padding: 10px 20px;
-      border: 1px solid #00ffff55;
+      border: 1px solid #99999955;
       border-radius: 5px;
       transition: background 0.2s;
     }
     .nav a:hover {
-      background: #00ffff22;
+      background: #99999922;
     }
   </style>
 </head>
@@ -58,6 +58,7 @@
     window.addEventListener('resize', () => {
       width = canvas.width = window.innerWidth;
       height = canvas.height = window.innerHeight;
+      createConnections();
     });
 
     const nodeCount = 60;
@@ -73,13 +74,16 @@
           y: Math.random() * height,
           dx: (Math.random() - 0.5) * 0.3,
           dy: (Math.random() - 0.5) * 0.3,
-          radius: 2 + Math.random() * 2
+          radius: 2 + Math.random() * 2,
+          hasConnection: false
         });
       }
     }
 
     function createConnections() {
       connections = [];
+      nodes.forEach(n => n.hasConnection = false);
+
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
           const dx = nodes[i].x - nodes[j].x;
@@ -87,6 +91,8 @@
           const dist = Math.sqrt(dx * dx + dy * dy);
           if (dist < 180) {
             connections.push([i, j]);
+            nodes[i].hasConnection = true;
+            nodes[j].hasConnection = true;
           }
         }
       }
@@ -114,7 +120,7 @@
     createConnections();
 
     function draw() {
-      ctx.fillStyle = "#0d0d0d";
+      ctx.fillStyle = "#1a1a1a";
       ctx.fillRect(0, 0, width, height);
 
       connections.forEach(([i, j]) => {
@@ -123,15 +129,16 @@
         ctx.beginPath();
         ctx.moveTo(a.x, a.y);
         ctx.lineTo(b.x, b.y);
-        ctx.strokeStyle = (hoveredNodeIndex === i || hoveredNodeIndex === j) ? "#00ffffaa" : "#00ffff22";
+        ctx.strokeStyle = (hoveredNodeIndex === i || hoveredNodeIndex === j) ? "#dddddd" : "#666";
         ctx.lineWidth = (hoveredNodeIndex === i || hoveredNodeIndex === j) ? 1.5 : 1;
         ctx.stroke();
       });
 
       nodes.forEach((n, index) => {
+        if (!n.hasConnection) return;
         ctx.beginPath();
         ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
-        ctx.fillStyle = (hoveredNodeIndex === index) ? "#ffffff" : "#00ffff";
+        ctx.fillStyle = (hoveredNodeIndex === index) ? "#ffffff" : "#cccccc";
         ctx.fill();
 
         n.x += n.dx;
