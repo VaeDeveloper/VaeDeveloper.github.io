@@ -50,27 +50,6 @@
     box-shadow: 0 0 10px 2px rgba(200, 200, 200, 0.3); /* лёгкое серое свечение */
   }
 
-  /* Анимация текста */
-  #signature {
-    position: absolute;
-    bottom: 5px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: #00cccc;
-    font-family: monospace, monospace;
-    font-weight: bold;
-    font-size: 1.2em;
-    letter-spacing: 2px;
-    user-select: none;
-    pointer-events: none;
-    height: 1.5em;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-  #art-container:hover #signature {
-    opacity: 1;
-  }
-
   .tabs {
     display: flex;
     gap: 20px;
@@ -189,6 +168,23 @@
     max-width: 700px;
     margin: 0 auto;
   }
+
+  /* Подпись внизу слева, по умолчанию скрыта */
+  #signature {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    color: #888888;
+    font-family: monospace, monospace;
+    font-weight: bold;
+    font-size: 1.3em;
+    letter-spacing: 2px;
+    user-select: none;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    white-space: nowrap;
+  }
 </style>
 </head>
 <body>
@@ -196,7 +192,6 @@
   <div class="tabs-wrapper">
     <div id="art-container">
       <canvas id="generative-art" width="260" height="260"></canvas>
-      <div id="signature"></div>
     </div>
     <div class="tabs">
       <div class="tab active" data-tab="projects">Projects</div>
@@ -270,6 +265,10 @@
   const tabs = document.querySelectorAll('.tab');
   const projectsSection = document.getElementById('projects');
   const bioSection = document.getElementById('bio');
+  const artContainer = document.getElementById('art-container');
+  const signatureElem = document.createElement('div');
+  signatureElem.id = "signature";
+  document.body.appendChild(signatureElem);
 
   tabs.forEach(tab => {
     tab.addEventListener('click', () => {
@@ -292,11 +291,9 @@
   const W = canvas.width;
   const H = canvas.height;
 
-  // Очистка и фон
   ctx.fillStyle = '#111111'; // фон страницы
   ctx.fillRect(0, 0, W, H);
 
-  // Рисуем большой круг границы
   const centerX = W / 2;
   const centerY = H / 2;
   const radius = W / 2 - 1;
@@ -307,7 +304,6 @@
   ctx.lineWidth = 1;
   ctx.stroke();
 
-  // Функция генерации случайной точки внутри круга
   function randomPointInCircle(cx, cy, r) {
     let x, y;
     do {
@@ -317,8 +313,7 @@
     return { x: cx + x, y: cy + y };
   }
 
-  // Рисуем линии
-  const linesCount = 800; // Кол-во линий
+  const linesCount = 800;
   ctx.strokeStyle = 'rgba(255,255,255,0.1)';
   ctx.lineWidth = 0.5;
 
@@ -332,67 +327,62 @@
     ctx.stroke();
   }
 
-  // --- Анимация подписи ---
-
+  // Анимация подписи
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   const signatureText = "0xToolset";
-  const signatureElem = document.getElementById("signature");
+  const signature = document.getElementById("signature");
 
-  let index = 0;
   let displayText = Array(signatureText.length).fill(' ');
+  let animationRunning = false;
 
   function randomChar() {
     return chars.charAt(Math.floor(Math.random() * chars.length));
   }
 
   function animateChar(i) {
+    if (!animationRunning) return; // остановка если мышь ушла
     if (i >= signatureText.length) {
       setTimeout(() => {
-        index = 0;
-        displayText.fill(' ');
-        animateChar(0);
+        if (animationRunning) {
+          displayText.fill(' ');
+          animateChar(0);
+        }
       }, 3000);
       return;
     }
 
     let iterations = 0;
-    const maxIterations = 15; // сколько раз менять символ перед фиксацией
+    const maxIterations = 15;
 
     function frame() {
+      if (!animationRunning) return;
       if (iterations < maxIterations) {
         displayText[i] = randomChar();
-        signatureElem.textContent = displayText.join('');
+        signature.textContent = displayText.join('');
         iterations++;
-        setTimeout(frame, 50); // скорость перебора символов
+        setTimeout(frame, 50);
       } else {
-        // Зафиксировать правильный символ
         displayText[i] = signatureText[i];
-        signatureElem.textContent = displayText.join('');
-        animateChar(i + 1); // перейти к следующему символу
+        signature.textContent = displayText.join('');
+        animateChar(i + 1);
       }
     }
 
     frame();
   }
 
-  // Запускаем анимацию при наведении и останавливаем при уходе
-
-  const artContainer = document.getElementById('art-container');
-  let animationRunning = false;
-
   artContainer.addEventListener('mouseenter', () => {
-    if (!animationRunning) {
-      animationRunning = true;
-      animateChar(0);
-    }
+    animationRunning = true;
+    animateChar(0);
+    signature.style.opacity = "1";
   });
 
   artContainer.addEventListener('mouseleave', () => {
     animationRunning = false;
-    signatureElem.textContent = '';
+    signature.style.opacity = "0";
+    signature.textContent = "";
     displayText.fill(' ');
   });
-
 </script>
 
 </body>
