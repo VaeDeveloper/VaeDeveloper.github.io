@@ -131,6 +131,14 @@
     background-color: #555555;
   }
 
+  /* Контейнеры вкладок - теперь и для проектов тоже */
+  .content {
+    display: none;
+  }
+  .content.active {
+    display: block;
+  }
+
   /* Биография и контакты */
   #bio {
     color: #cccccc;
@@ -138,11 +146,6 @@
     line-height: 1.6;
     max-width: 700px;
     margin: 0 auto;
-    display: none;
-  }
-
-  #bio.active {
-    display: block;
   }
 
   /* Футер */
@@ -228,7 +231,7 @@
       </div>
     </div>
 
-    <div id="bio">
+    <div id="bio" class="content">
       <h2>About Me</h2>
       <p>Hello! I'm VaeDeveloper, a passionate developer specialized in C++ and Unreal Engine tools. I love creating helpful and powerful editor utilities, plugins, and interactive applications.</p>
       <h3>Contact</h3>
