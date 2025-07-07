@@ -4,78 +4,87 @@
   <meta charset="UTF-8" />
   <title>VaeDeveloper</title>
   <style>
-    body {
+    html, body {
       margin: 0;
       background: #0d0d0d;
       overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      height: 100vh;
+      height: 100%;
       font-family: 'Segoe UI', Tahoma, sans-serif;
     }
     canvas {
       display: block;
-      cursor: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 0;
     }
-    .button {
-      margin-top: 40px;
-      padding: 14px 28px;
-      font-size: 1em;
-      background-color: #00ffff;
-      color: #000;
-      font-weight: bold;
-      text-decoration: none;
-      border-radius: 6px;
-      transition: background-color 0.2s;
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       z-index: 1;
+      pointer-events: none;
     }
-    .button:hover {
-      background-color: #00cccc;
+    .shape-button {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background-color: white;
+      bottom: 60px;
+      right: 60px;
+      cursor: pointer;
+      pointer-events: auto;
+      transition: background-color 0.2s;
+    }
+    .shape-button:hover {
+      background-color: #cccccc;
     }
   </style>
 </head>
 <body>
-  <canvas id="circle" width="700" height="700"></canvas>
-  <a class="button" href="projects.html">View Projects</a>
+  <canvas id="wave"></canvas>
+  <div class="overlay">
+    <a href="projects.html" class="shape-button"></a>
+  </div>
 
   <script>
-    const canvas = document.getElementById("circle");
+    const canvas = document.getElementById("wave");
     const ctx = canvas.getContext("2d");
-    const center = canvas.width / 2;
-    const radius = center * 0.95;
-    const points = 200;
+    let width, height;
 
-    function drawFrame(time) {
-      ctx.fillStyle = "#0d0d0d";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    function resize() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    }
+
+    window.addEventListener("resize", resize);
+    resize();
+
+    const lines = 30;
+    const spacing = 12;
+
+    function draw(time) {
+      ctx.clearRect(0, 0, width, height);
       ctx.strokeStyle = "white";
-      ctx.lineWidth = 0.2;
+      ctx.lineWidth = 1;
 
-      // создаём «хаос» с помощью синуса времени
-      const mod = 2 + Math.sin(time * 0.001) * 3 + Math.sin(time * 0.0007) * 2;
-
-      for (let i = 0; i < points; i++) {
-        const angle1 = (2 * Math.PI * i) / points;
-        const j = (i * mod + Math.sin(time * 0.0003 + i) * 10) % points;
-        const angle2 = (2 * Math.PI * j) / points;
-
-        const x1 = center + radius * Math.cos(angle1);
-        const y1 = center + radius * Math.sin(angle1);
-        const x2 = center + radius * Math.cos(angle2);
-        const y2 = center + radius * Math.sin(angle2);
-
+      for (let i = 0; i < lines; i++) {
         ctx.beginPath();
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x2, y2);
+        for (let x = 0; x < width; x += 10) {
+          const y = height / 2 + Math.sin(x * 0.01 + i + time * 0.002) * spacing * (i / lines);
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
         ctx.stroke();
       }
 
-      requestAnimationFrame(drawFrame);
+      requestAnimationFrame(draw);
     }
 
-    drawFrame(0);
+    draw(0);
   </script>
 </body>
 </html>
