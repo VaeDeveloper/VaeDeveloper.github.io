@@ -2,14 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>VaeDeveloper — Logic Graph</title>
+  <title>VaeDeveloper — Data Flow</title>
   <style>
     html, body {
       margin: 0;
       background: #0d0d0d;
       overflow: hidden;
       height: 100%;
-      font-family: 'Segoe UI', Tahoma, sans-serif;
     }
     canvas {
       display: block;
@@ -20,10 +19,10 @@
   </style>
 </head>
 <body>
-  <canvas id="graph"></canvas>
+  <canvas id="flow"></canvas>
 
   <script>
-    const canvas = document.getElementById("graph");
+    const canvas = document.getElementById("flow");
     const ctx = canvas.getContext("2d");
     let width = canvas.width = window.innerWidth;
     let height = canvas.height = window.innerHeight;
@@ -33,66 +32,38 @@
       height = canvas.height = window.innerHeight;
     });
 
-    const nodes = [];
-    const connections = [];
-    const nodeCount = 50;
+    const lines = [];
+    const lineCount = 80;
 
-    for (let i = 0; i < nodeCount; i++) {
-      nodes.push({
-        x: Math.random() * width,
+    for (let i = 0; i < lineCount; i++) {
+      lines.push({
         y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
-        radius: 3 + Math.random() * 2
+        offset: Math.random() * 1000,
+        speed: 0.5 + Math.random() * 1.5
       });
     }
 
-    // Randomly connect nodes
-    for (let i = 0; i < nodeCount; i++) {
-      for (let j = i + 1; j < nodeCount; j++) {
-        if (Math.random() < 0.05) {
-          connections.push([i, j]);
-        }
-      }
-    }
-
-    function draw() {
+    function draw(time) {
       ctx.fillStyle = "#0d0d0d";
       ctx.fillRect(0, 0, width, height);
 
-      // Draw connections
       ctx.strokeStyle = "#00ffff33";
       ctx.lineWidth = 1;
-      connections.forEach(([i, j]) => {
-        const a = nodes[i];
-        const b = nodes[j];
+
+      lines.forEach((line, index) => {
         ctx.beginPath();
-        ctx.moveTo(a.x, a.y);
-        ctx.lineTo(b.x, b.y);
+        for (let x = 0; x < width; x += 10) {
+          const y = line.y + Math.sin((x + time * line.speed + line.offset) * 0.01) * 40 * Math.sin(index * 0.1);
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
         ctx.stroke();
-      });
-
-      // Draw nodes
-      nodes.forEach(n => {
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
-        ctx.fillStyle = "#00ffff";
-        ctx.fill();
-      });
-
-      // Update node positions (slight floating)
-      nodes.forEach(n => {
-        n.x += n.vx;
-        n.y += n.vy;
-
-        if (n.x < 0 || n.x > width) n.vx *= -1;
-        if (n.y < 0 || n.y > height) n.vy *= -1;
       });
 
       requestAnimationFrame(draw);
     }
 
-    draw();
+    draw(0);
   </script>
 </body>
 </html>
