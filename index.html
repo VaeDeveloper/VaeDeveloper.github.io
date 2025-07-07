@@ -43,6 +43,18 @@
 .nav a:hover {
   background: #44444422;
 }
+
+.signature {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  color: #888888;
+  font-size: 1em;
+  user-select: none;
+  pointer-events: none;
+  white-space: nowrap;
+}
 </style>
 </head>
 <body>
@@ -53,6 +65,8 @@
     <a href="#projects">Project</a>
     <a href="#contact">Contact</a>
   </div>
+
+  <div class="signature" id="signature"></div>
 
   <script>
     const canvas = document.getElementById("graph");
@@ -331,6 +345,27 @@ function createNodes() {
     createNodes();
     createConnections();
     draw();
+
+    // Анимация набора подписи
+    const signatureText = "0xToolset";
+    const signatureElem = document.getElementById("signature");
+    let index = 0;
+
+    function typeSignature() {
+      if (index <= signatureText.length) {
+        signatureElem.textContent = signatureText.slice(0, index);
+        index++;
+        setTimeout(typeSignature, 150);
+      } else {
+        setTimeout(() => {
+          index = 0;
+          signatureElem.textContent = "";
+          setTimeout(typeSignature, 500);
+        }, 2000);
+      }
+    }
+
+    typeSignature();
   </script>
 </body>
 </html>
