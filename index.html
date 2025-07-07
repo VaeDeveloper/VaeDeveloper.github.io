@@ -91,6 +91,43 @@
       }
     }
 
+    function alignToLetter(letter) {
+      const fontSize = 240;
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = width;
+      tempCanvas.height = height;
+      const tempCtx = tempCanvas.getContext('2d');
+      tempCtx.fillStyle = '#fff';
+      tempCtx.font = `${fontSize}px sans-serif`;
+      tempCtx.textAlign = 'center';
+      tempCtx.textBaseline = 'middle';
+      tempCtx.fillText(letter, width / 2, height / 2);
+      const imageData = tempCtx.getImageData(0, 0, width, height).data;
+
+      let targets = [];
+      for (let y = 0; y < height; y += 10) {
+        for (let x = 0; x < width; x += 10) {
+          const index = (y * width + x) * 4;
+          if (imageData[index] > 128) {
+            targets.push({ x, y });
+          }
+        }
+      }
+
+      targets = targets.slice(0, nodeCount);
+      for (let i = 0; i < nodes.length && i < targets.length; i++) {
+        nodes[i].x = targets[i].x;
+        nodes[i].y = targets[i].y;
+        nodes[i].dx = 0;
+        nodes[i].dy = 0;
+      }
+    }
+
+    window.addEventListener("keydown", (e) => {
+      if (e.key.toLowerCase() === 'b') alignToLetter('B');
+      if (e.key.toLowerCase() === 'p') console.log("Project mode activated (you can hook this later)");
+    });
+
     createNodes();
     createConnections();
 
