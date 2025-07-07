@@ -74,8 +74,8 @@
         nodes.push({
           x: Math.random() * width,
           y: Math.random() * height,
-          dx,
-          dy,
+          dx: dx,
+          dy: dy,
           initialDx: dx,
           initialDy: dy,
           radius: 2 + Math.random() * 2,
@@ -88,15 +88,34 @@
     function createConnections() {
       connections = [];
       nodes.forEach(n => n.hasConnection = false);
+
       for (let i = 0; i < nodes.length; i++) {
-        for (let j = i + 1; j < nodes.length; j++) {
+        let closest = null;
+        let closestDist = Infinity;
+
+        for (let j = 0; j < nodes.length; j++) {
+          if (i === j) continue;
           const dx = nodes[i].x - nodes[j].x;
           const dy = nodes[i].y - nodes[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
+
           if (dist < 180) {
             connections.push([i, j]);
             nodes[i].hasConnection = true;
             nodes[j].hasConnection = true;
+          }
+
+          if (dist < closestDist) {
+            closestDist = dist;
+            closest = j;
+          }
+        }
+
+        if (!nodes[i].hasConnection || closestDist > 250) {
+          if (closest !== null) {
+            connections.push([i, closest]);
+            nodes[i].hasConnection = true;
+            nodes[closest].hasConnection = true;
           }
         }
       }
@@ -124,7 +143,6 @@
       const mx = e.clientX - rect.left;
       const my = e.clientY - rect.top;
 
-      // удалить узел при клике прямо на него
       for (let i = 0; i < nodes.length; i++) {
         const n = nodes[i];
         const dx = mx - n.x;
@@ -137,7 +155,6 @@
         }
       }
 
-      // импульс от курсора
       nodes.forEach(n => {
         const dx = n.x - mx;
         const dy = n.y - my;
@@ -159,6 +176,7 @@
           const dy = b.y - a.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
           const minDist = a.radius + b.radius + 4;
+
           if (dist < minDist && dist > 0) {
             const overlap = (minDist - dist) / 2;
             const nx = dx / dist;
@@ -167,6 +185,7 @@
             a.y -= ny * overlap;
             b.x += nx * overlap;
             b.y += ny * overlap;
+
             const damping = 0.05;
             const ax = nx * damping;
             const ay = ny * damping;
@@ -216,6 +235,7 @@
 
         n.x += n.dx;
         n.y += n.dy;
+
         n.dx += (n.initialDx - n.dx) * 0.01;
         n.dy += (n.initialDy - n.dy) * 0.01;
 
