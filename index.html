@@ -18,7 +18,7 @@
   .container {
     max-width: 1400px;
     min-width: 320px;
-    margin: 180px auto 0; /* отступ сверху под табы */
+    margin: 140px auto 0;
     padding: 40px 40px 80px;
     user-select: none;
     min-height: 600px;
@@ -161,10 +161,12 @@
   }
 
   .content {
-    display: none;
     min-height: 600px;
   }
-  .content.active {
+  .content.hidden {
+    display: none;
+  }
+  .content.visible {
     display: block;
   }
 
@@ -211,6 +213,7 @@
       box-shadow: 0 0 15px rgba(0,204,204,0.3);
       position: fixed !important;
       z-index: 100;
+      display: none !important; /* скрываем табы */
     }
 
     #art-container {
@@ -218,17 +221,10 @@
     }
 
     .container {
-      margin-top: 100px !important; /* отступ вниз под фиксированные табы */
+      margin-top: 20px !important; /* уменьшенный отступ сверху */
       padding: 20px 15px 80px !important;
-      min-height: auto !important;
+      min-height: auto;
       transition: margin 0.3s ease;
-    }
-
-    .tab {
-      width: 140px !important;
-      padding: 12px 0 !important;
-      font-size: 1em !important;
-      border-radius: 10px !important;
     }
   }
 </style>
@@ -246,7 +242,7 @@
   </div>
 
   <main class="container">
-    <section id="projects" class="content active" role="tabpanel" tabindex="0" aria-labelledby="projects">
+    <section id="projects" class="content visible" role="tabpanel" tabindex="0" aria-labelledby="projects">
       <div class="grid">
         <article class="project">
           <h2>NoiseGenerator</h2>
@@ -297,7 +293,7 @@
       </div>
     </section>
 
-    <section id="bio" class="content" role="tabpanel" tabindex="0" aria-labelledby="bio">
+    <section id="bio" class="content hidden" role="tabpanel" tabindex="0" aria-labelledby="bio">
       <h2>About Me</h2>
       <p>Hello! I'm VaeDeveloper, a passionate developer specialized in C++ and Unreal Engine tools. I love creating helpful and powerful editor utilities, plugins, and interactive applications.</p>
       <h3>Contact</h3>
@@ -331,12 +327,16 @@
       tab.setAttribute('tabindex', '0');
 
       if (tab.dataset.tab === 'projects') {
-        projectsSection.classList.add('active');
-        bioSection.classList.remove('active');
+        projectsSection.classList.remove('hidden');
+        projectsSection.classList.add('visible');
+        bioSection.classList.remove('visible');
+        bioSection.classList.add('hidden');
         projectsSection.focus();
       } else if (tab.dataset.tab === 'bio') {
-        bioSection.classList.add('active');
-        projectsSection.classList.remove('active');
+        bioSection.classList.remove('hidden');
+        bioSection.classList.add('visible');
+        projectsSection.classList.remove('visible');
+        projectsSection.classList.add('hidden');
         bioSection.focus();
       }
     });
