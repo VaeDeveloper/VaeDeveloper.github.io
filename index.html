@@ -79,6 +79,7 @@
           initialDx: dx,
           initialDy: dy,
           radius: 2 + Math.random() * 2,
+          targetRadius: 0,
           hasConnection: false
         });
       }
@@ -133,6 +134,7 @@
         const angle = Math.atan2(dy, dx);
         n.dx += Math.cos(angle) * impulse * 1.5;
         n.dy += Math.sin(angle) * impulse * 1.5;
+        n.targetRadius = n.radius + impulse * 5; // scale up temporarily
       });
     });
 
@@ -189,6 +191,18 @@
 
       nodes.forEach((n, index) => {
         if (!n.hasConnection) return;
+
+        // Interpolate radius for scaling
+        if (n.targetRadius > 0) {
+          n.radius += (n.targetRadius - n.radius) * 0.1;
+          if (Math.abs(n.targetRadius - n.radius) < 0.1) {
+            n.targetRadius = 0; // reset
+          }
+        } else {
+          const base = 2.5;
+          n.radius += (base - n.radius) * 0.05;
+        }
+
         ctx.beginPath();
         ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
         ctx.fillStyle = (hoveredNodeIndex === index) ? "#ffffff" : "#cccccc";
@@ -197,7 +211,6 @@
         n.x += n.dx;
         n.y += n.dy;
 
-        // Gradual return to original velocity
         n.dx += (n.initialDx - n.dx) * 0.01;
         n.dy += (n.initialDy - n.dy) * 0.01;
 
