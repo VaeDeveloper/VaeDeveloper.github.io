@@ -17,6 +17,7 @@
     }
     canvas {
       display: block;
+      cursor: none;
     }
     .button {
       margin-top: 40px;
@@ -28,6 +29,7 @@
       text-decoration: none;
       border-radius: 6px;
       transition: background-color 0.2s;
+      z-index: 1;
     }
     .button:hover {
       background-color: #00cccc;
@@ -45,15 +47,29 @@
     const radius = center * 0.95;
     const points = 180;
 
+    let mouseX = center;
+    let mouseY = center;
+
+    canvas.addEventListener("mousemove", e => {
+      const rect = canvas.getBoundingClientRect();
+      mouseX = e.clientX - rect.left;
+      mouseY = e.clientY - rect.top;
+    });
+
     function drawFrame(time) {
       ctx.fillStyle = "#0d0d0d";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.strokeStyle = "white";
       ctx.lineWidth = 0.3;
 
+      // модификатор зависит от мыши
+      const dx = mouseX - center;
+      const dy = mouseY - center;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const mod = 2 + Math.sin(time * 0.001) + (dist / center);
+
       for (let i = 0; i < points; i++) {
         const angle1 = (2 * Math.PI * i) / points;
-        const mod = 2 + Math.sin(time * 0.001);
         const angle2 = (2 * Math.PI * ((i * mod) % points)) / points;
 
         const x1 = center + radius * Math.cos(angle1);
