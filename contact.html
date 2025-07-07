@@ -2,41 +2,85 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Drawflow Demo</title>
+<title>Drawflow Stylish Nodes</title>
 <link rel="stylesheet" href="https://unpkg.com/drawflow/dist/drawflow.min.css" />
 <style>
-  #drawflow {
-    width: 100vw;
-    height: 100vh;
+  body, html {
+    margin: 0; padding: 0; height: 100%;
     background: #111;
+  }
+  #drawflow {
+    width: 100vw; height: 100vh;
+  }
+
+  /* Кастомный стиль для нод */
+  .drawflow-node {
+    background: #222;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    color: #0ff;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    padding: 15px;
+    min-width: 180px;
+    user-select: none;
+  }
+  .drawflow-node p {
+    margin: 0 0 10px;
+    font-weight: bold;
+    font-size: 1.1em;
+    text-align: center;
+  }
+  .drawflow-node .inputs, .drawflow-node .outputs {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 10px;
+  }
+  .drawflow-node .input, .drawflow-node .output {
+    width: 12px;
+    height: 12px;
+    background: #00ffff;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 5px #00ffff;
   }
 </style>
 </head>
 <body>
-  <div id="drawflow"></div>
 
-  <script src="https://unpkg.com/drawflow/dist/drawflow.min.js"></script>
-  <script>
-    const editor = new Drawflow(document.getElementById('drawflow'));
-    editor.start();
+<div id="drawflow"></div>
 
-    editor.addNode('Node 1', 1, 1, 100, 100, 'node1', {}, `
-      <div style="padding:10px; color:#0ff;">
-        <p>Node 1</p>
+<script src="https://unpkg.com/drawflow/dist/drawflow.min.js"></script>
+<script>
+  const editor = new Drawflow(document.getElementById('drawflow'));
+  editor.start();
+
+  editor.addNode('Node 1', 1, 1, 100, 100, 'node1', {}, `
+    <div>
+      <p>Node 1</p>
+      <div class="inputs">
         <div class="input" data-input="input_1"></div>
+      </div>
+      <div class="outputs">
         <div class="output" data-output="output_1"></div>
       </div>
-    `);
+    </div>
+  `);
 
-    editor.addNode('Node 2', 1, 1, 400, 100, 'node2', {}, `
-      <div style="padding:10px; color:#0ff;">
-        <p>Node 2</p>
+  editor.addNode('Node 2', 1, 1, 400, 100, 'node2', {}, `
+    <div>
+      <p>Node 2</p>
+      <div class="inputs">
         <div class="input" data-input="input_1"></div>
+      </div>
+      <div class="outputs">
         <div class="output" data-output="output_1"></div>
       </div>
-    `);
+    </div>
+  `);
 
-    editor.addConnection('node1', 'output_1', 'node2', 'input_1');
-  </script>
+  editor.addConnection('node1', 'output_1', 'node2', 'input_1');
+</script>
+
 </body>
 </html>
