@@ -16,20 +16,20 @@
 
   .container {
     max-width: 1400px;
-    margin: 140px auto 0; /* сдвинули вниз */
+    margin: 140px auto 0;
     padding: 40px 40px 80px;
     user-select: none;
   }
 
-  /* Вкладки */
+
   .tabs {
     position: fixed;
-    top: 80px; /* ниже */
-    left: 85%; /* ещё правее (было 65%) */
+    top: 60px;
+    left: 75%;
     transform: translateX(-50%);
     display: flex;
     gap: 20px;
-    width: 260px; /* ширина под две кнопки по 120px + gap */
+    width: 260px;
     justify-content: space-between;
     z-index: 10;
   }
@@ -56,7 +56,7 @@
     border-color: #00cccc;
   }
 
-  /* Проекты */
+
   .grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -131,7 +131,7 @@
     background-color: #555555;
   }
 
-  /* Контейнеры вкладок */
+
   .content {
     display: none;
   }
@@ -139,36 +139,13 @@
     display: block;
   }
 
-  /* Биография и контакты */
+
   #bio {
     color: #cccccc;
     font-size: 1.1em;
     line-height: 1.6;
     max-width: 700px;
     margin: 0 auto;
-  }
-
-  /* Футер */
-  .footer {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 30px 40px 80px;
-    text-align: left;
-    border-top: 1px solid #222;
-    font-size: 1em;
-    color: #666;
-    user-select: none;
-  }
-
-  .footer a {
-    color: #cccccc;
-    text-decoration: none;
-    margin: 0 10px;
-    font-weight: bold;
-  }
-
-  .footer a:hover {
-    color: #eeeeee;
   }
 </style>
 </head>
@@ -239,12 +216,6 @@
       <p>GitHub: <a href="https://github.com/VaeDeveloper" target="_blank" rel="noopener noreferrer" style="color:#00cccc;">https://github.com/VaeDeveloper</a></p>
       <p>Reddit: <a href="https://www.reddit.com/user/dalexdeb/submitted/" target="_blank" rel="noopener noreferrer" style="color:#00cccc;">https://www.reddit.com/user/dalexdeb/submitted/</a></p>
     </div>
-  </div>
-
-  <div class="footer">
-    <h3>More Links</h3>
-    <a href="https://github.com/VaeDeveloper" target="_blank" rel="noopener noreferrer">GitHub Profile</a> ·
-    <a href="https://www.reddit.com/user/dalexdeb/submitted/" target="_blank" rel="noopener noreferrer">Reddit</a>
   </div>
 
 <script>
