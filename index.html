@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>VaeDeveloper — Data Flow</title>
+  <title>VaeDeveloper — Living Graph</title>
   <style>
     html, body {
       margin: 0;
@@ -19,10 +19,10 @@
   </style>
 </head>
 <body>
-  <canvas id="flow"></canvas>
+  <canvas id="graph"></canvas>
 
   <script>
-    const canvas = document.getElementById("flow");
+    const canvas = document.getElementById("graph");
     const ctx = canvas.getContext("2d");
     let width = canvas.width = window.innerWidth;
     let height = canvas.height = window.innerHeight;
@@ -32,38 +32,76 @@
       height = canvas.height = window.innerHeight;
     });
 
-    const lines = [];
-    const lineCount = 80;
+    const nodeCount = 60;
+    let nodes = [];
+    let connections = [];
 
-    for (let i = 0; i < lineCount; i++) {
-      lines.push({
-        y: Math.random() * height,
-        offset: Math.random() * 1000,
-        speed: 0.5 + Math.random() * 1.5
-      });
+    function createNodes() {
+      nodes = [];
+      for (let i = 0; i < nodeCount; i++) {
+        nodes.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          radius: 2 + Math.random() * 2,
+          dx: (Math.random() - 0.5) * 0.5,
+          dy: (Math.random() - 0.5) * 0.5
+        });
+      }
     }
 
-    function draw(time) {
+    function createConnections() {
+      connections = [];
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const dx = nodes[i].x - nodes[j].x;
+          const dy = nodes[i].y - nodes[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 180) {
+            connections.push([i, j]);
+          }
+        }
+      }
+    }
+
+    createNodes();
+    createConnections();
+    setInterval(() => {
+      createNodes();
+      createConnections();
+    }, 3000);
+
+    function draw() {
       ctx.fillStyle = "#0d0d0d";
       ctx.fillRect(0, 0, width, height);
 
-      ctx.strokeStyle = "#00ffff33";
+      ctx.strokeStyle = "#00ffff22";
       ctx.lineWidth = 1;
-
-      lines.forEach((line, index) => {
+      connections.forEach(([i, j]) => {
+        const a = nodes[i];
+        const b = nodes[j];
         ctx.beginPath();
-        for (let x = 0; x < width; x += 10) {
-          const y = line.y + Math.sin((x + time * line.speed + line.offset) * 0.01) * 40 * Math.sin(index * 0.1);
-          if (x === 0) ctx.moveTo(x, y);
-          else ctx.lineTo(x, y);
-        }
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
         ctx.stroke();
+      });
+
+      nodes.forEach(n => {
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
+        ctx.fillStyle = "#00ffff";
+        ctx.fill();
+
+        // soft movement
+        n.x += n.dx;
+        n.y += n.dy;
+        if (n.x < 0 || n.x > width) n.dx *= -1;
+        if (n.y < 0 || n.y > height) n.dy *= -1;
       });
 
       requestAnimationFrame(draw);
     }
 
-    draw(0);
+    draw();
   </script>
 </body>
 </html>
