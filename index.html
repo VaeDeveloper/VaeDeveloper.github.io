@@ -16,24 +16,28 @@
 
   .container {
     max-width: 1400px;
-    min-width: 700px;      /* Минимальная ширина контейнера */
+    min-width: 700px;
     margin: 140px auto 0;
     padding: 40px 40px 80px;
     user-select: none;
-    min-height: 600px;     /* Минимальная высота контейнера для стабильности */
+    min-height: 600px;
     box-sizing: border-box;
   }
 
-  .tabs {
+  .tabs-wrapper {
     position: fixed;
     top: 90px;
     left: 15%;
     transform: translateX(-50%);
+    width: 260px;
+    z-index: 20;
+  }
+
+  .tabs {
     display: flex;
     gap: 20px;
-    width: 260px;
-    justify-content: flex-start; /* выровнять слева */
-    z-index: 10;
+    justify-content: flex-start;
+    margin-bottom: 20px;
   }
 
   .tab {
@@ -56,6 +60,17 @@
     color: #00cccc;
     box-shadow: 0 0 10px #00cccc;
     border-color: #00cccc;
+  }
+
+  /* Canvas container */
+  #art-container {
+    width: 260px;
+    height: 260px;
+    background-color: #222;
+    border-radius: 0;
+    box-shadow: 0 0 15px rgba(0, 204, 204, 0.3);
+    margin-bottom: 10px;
+    user-select: none;
   }
 
   .grid {
@@ -134,7 +149,7 @@
 
   .content {
     display: none;
-    min-height: 600px; /* Минимальная высота для контента */
+    min-height: 600px;
   }
   .content.active {
     display: block;
@@ -151,9 +166,14 @@
 </head>
 <body>
 
-  <div class="tabs">
-    <div class="tab active" data-tab="projects">Projects</div>
-    <div class="tab" data-tab="bio">Bio</div>
+  <div class="tabs-wrapper">
+    <div id="art-container">
+      <canvas id="generative-art" width="260" height="260"></canvas>
+    </div>
+    <div class="tabs">
+      <div class="tab active" data-tab="projects">Projects</div>
+      <div class="tab" data-tab="bio">Bio</div>
+    </div>
   </div>
 
   <div class="container">
@@ -237,6 +257,50 @@
       }
     });
   });
+
+
+  const canvas = document.getElementById('generative-art');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width;
+  const H = canvas.height;
+  ctx.fillStyle = '#222';
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+  ctx.lineWidth = 0.5;
+
+  const centerX = W / 2;
+  const centerY = H / 2;
+  const radius = W / 2 - 1;
+
+
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+
+  const pointsCount = 180; 
+  const points = [];
+
+  for (let i = 0; i < pointsCount; i++) {
+    const angle = (i / pointsCount) * Math.PI * 2;
+    points.push({
+      x: centerX + radius * Math.cos(angle),
+      y: centerY + radius * Math.sin(angle)
+    });
+  }
+
+  // Соединяем точки с отступом, как в арт-изображении
+  for (let i = 0; i < pointsCount; i++) {
+    for (let j = i + 20; j < pointsCount; j += 5) {
+      ctx.beginPath();
+      ctx.moveTo(points[i].x, points[i].y);
+      ctx.lineTo(points[j].x, points[j].y);
+      ctx.stroke();
+    }
+  }
 </script>
 
 </body>
