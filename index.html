@@ -19,8 +19,8 @@
     .nav {
       position: fixed;
       top: 50%;
-left: 50%;
-transform: translate(-50%, -50%);
+      left: 50%;
+      transform: translate(-50%, -50%);
       display: flex;
       gap: 30px;
       z-index: 10;
@@ -253,10 +253,10 @@ transform: translate(-50%, -50%);
         if (!n.hasConnection) return;
 
         if (n.targetRadius > 0) {
-  const maxRadius = 50;
-  n.radius += (Math.min(maxRadius, n.targetRadius) - n.radius) * 0.1;
-  if (Math.abs(n.targetRadius - n.radius) < 0.1) {
-    n.targetRadius = 0;
+          const maxRadius = 50;
+          n.radius += (Math.min(maxRadius, n.targetRadius) - n.radius) * 0.1;
+          if (Math.abs(n.targetRadius - n.radius) < 0.1) {
+            n.targetRadius = 0;
           }
         } else {
           const base = 2.5;
@@ -275,52 +275,50 @@ transform: translate(-50%, -50%);
         n.dy += (n.initialDy - n.dy) * 0.01;
 
         if (n.x < 10) {
-  n.x = 10;
-  n.dx = Math.abs(n.dx) + Math.random();
-  n.targetRadius = n.radius + 4;
-} else if (n.x > width - 10) {
-  n.x = width - 10;
-  n.dx = -Math.abs(n.dx) - Math.random();
-  n.targetRadius = n.radius + 4;
-}
-}
-if (n.y < 10) {
-  n.y = 10;
-  n.dy = Math.abs(n.dy) + Math.random();
-  n.targetRadius = n.radius + 4;
-} else if (n.y > height - 10) {
-  n.y = height - 10;
-  n.dy = -Math.abs(n.dy) - Math.random();
-  n.targetRadius = n.radius + 4;
-}
-}
+          n.x = 10;
+          n.dx = Math.abs(n.dx) + 0.5;
+          n.targetRadius = n.radius + 4;
+        } else if (n.x > width - 10) {
+          n.x = width - 10;
+          n.dx = -Math.abs(n.dx) - 0.5;
+          n.targetRadius = n.radius + 4;
+        }
+
+        if (n.y < 10) {
+          n.y = 10;
+          n.dy = Math.abs(n.dy) + 0.5;
+          n.targetRadius = n.radius + 4;
+        } else if (n.y > height - 10) {
+          n.y = height - 10;
+          n.dy = -Math.abs(n.dy) - 0.5;
+          n.targetRadius = n.radius + 4;
+        }
       });
 
-      // Получаем границы всех ссылок навигации
-const navLinks = document.querySelectorAll('.nav a');
-const linkRects = Array.from(navLinks).map(link => link.getBoundingClientRect());
+      // Отскок от кнопок навигации
+      const navLinks = document.querySelectorAll('.nav a');
+      const linkRects = Array.from(navLinks).map(link => link.getBoundingClientRect());
 
-nodes.forEach((n, index) => {
-  linkRects.forEach(rect => {
-    if (
-      n.x > rect.left && n.x < rect.right &&
-      n.y > rect.top && n.y < rect.bottom
-    ) {
-      // отскок от кнопки
-      const cx = (rect.left + rect.right) / 2;
-      const cy = (rect.top + rect.bottom) / 2;
-      const dx = n.x - cx;
-      const dy = n.y - cy;
-      const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-      const force = 2;
-      n.dx += (dx / dist) * force;
-      n.dy += (dy / dist) * force;
-      n.targetRadius = n.radius + 4;
-    }
-  });
-});
+      nodes.forEach((n) => {
+        linkRects.forEach(rect => {
+          if (
+            n.x > rect.left && n.x < rect.right &&
+            n.y > rect.top && n.y < rect.bottom
+          ) {
+            const cx = (rect.left + rect.right) / 2;
+            const cy = (rect.top + rect.bottom) / 2;
+            const dx = n.x - cx;
+            const dy = n.y - cy;
+            const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+            const force = 2;
+            n.dx += (dx / dist) * force;
+            n.dy += (dy / dist) * force;
+            n.targetRadius = n.radius + 4;
+          }
+        });
+      });
 
-requestAnimationFrame(draw);
+      requestAnimationFrame(draw);
     }
 
     createNodes();
