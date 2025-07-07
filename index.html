@@ -16,17 +16,24 @@
 
   .container {
     max-width: 1400px;
-    margin: 40px auto 80px;
-    padding: 0 40px 80px;
+    min-width: 700px;      /* Минимальная ширина контейнера */
+    margin: 140px auto 0;
+    padding: 40px 40px 80px;
     user-select: none;
+    min-height: 600px;     /* Минимальная высота контейнера для стабильности */
+    box-sizing: border-box;
   }
 
-  /* Вкладки — внутри контейнера */
   .tabs {
+    position: fixed;
+    top: 90px;
+    left: 15%;
+    transform: translateX(-50%);
     display: flex;
     gap: 20px;
-    justify-content: flex-start; /* выравнивание по левому краю */
-    margin-bottom: 40px; /* отступ снизу перед контентом */
+    width: 260px;
+    justify-content: flex-start; /* выровнять слева */
+    z-index: 10;
   }
 
   .tab {
@@ -127,6 +134,7 @@
 
   .content {
     display: none;
+    min-height: 600px; /* Минимальная высота для контента */
   }
   .content.active {
     display: block;
@@ -143,12 +151,12 @@
 </head>
 <body>
 
-  <div class="container">
-    <div class="tabs">
-      <div class="tab active" data-tab="projects">Projects</div>
-      <div class="tab" data-tab="bio">Bio</div>
-    </div>
+  <div class="tabs">
+    <div class="tab active" data-tab="projects">Projects</div>
+    <div class="tab" data-tab="bio">Bio</div>
+  </div>
 
+  <div class="container">
     <div id="projects" class="content active">
       <div class="grid">
         <div class="project">
