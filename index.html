@@ -195,7 +195,7 @@ transform: translate(-50%, -50%);
         const angle = Math.atan2(dy, dx);
         n.dx += Math.cos(angle) * impulse * 1.5;
         n.dy += Math.sin(angle) * impulse * 1.5;
-        n.targetRadius = n.radius + impulse * 5;
+        n.targetRadius = Math.min(50, n.radius + impulse * 5);
       });
     });
 
@@ -287,7 +287,7 @@ if (n.y < 10 || n.y > height - 10) {
 }
       });
 
-      // Получаем границы всех ссылок навигации
+
 const navLinks = document.querySelectorAll('.nav a');
 const linkRects = Array.from(navLinks).map(link => link.getBoundingClientRect());
 
