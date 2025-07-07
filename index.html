@@ -56,33 +56,33 @@
     let height = canvas.height = window.innerHeight;
 
     window.addEventListener('resize', () => {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-      createConnections();
+  width = canvas.width = window.innerWidth;
+  height = canvas.height = window.innerHeight;
+  createConnections();
 
-    function applyNodeAttraction() {
-      for (let i = 0; i < nodes.length; i++) {
-        for (let j = i + 1; j < nodes.length; j++) {
-          const a = nodes[i];
-          const b = nodes[j];
-          const dx = b.x - a.x;
-          const dy = b.y - a.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
+function applyNodeAttraction() {
+  for (let i = 0; i < nodes.length; i++) {
+    for (let j = i + 1; j < nodes.length; j++) {
+      const a = nodes[i];
+      const b = nodes[j];
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
 
-          const maxAttractDist = 300;
-          if (dist > 100 && dist < maxAttractDist) {
-            const force = (dist - 100) / maxAttractDist * 0.001;
-            const nx = dx / dist;
-            const ny = dy / dist;
-            a.dx += nx * force;
-            a.dy += ny * force;
-            b.dx -= nx * force;
-            b.dy -= ny * force;
-          }
-        }
+      const maxAttractDist = 300;
+      if (dist > 100 && dist < maxAttractDist) {
+        const force = (dist - 100) / maxAttractDist * 0.001;
+        const nx = dx / dist;
+        const ny = dy / dist;
+        a.dx += nx * force;
+        a.dy += ny * force;
+        b.dx -= nx * force;
+        b.dy -= ny * force;
       }
     }
-    });
+  }
+}
+});
 
     const nodeCount = 100;
     let nodes = [];
@@ -198,7 +198,7 @@
     function draw() {
       applyNodeAttraction();
 
-      ctx.fillStyle = "#1a1a1a";
+      ctx.fillStyle = "#111111";
       ctx.fillRect(0, 0, width, height);
 
       connections.forEach(([i, j]) => {
