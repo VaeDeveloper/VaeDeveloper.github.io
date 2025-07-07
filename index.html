@@ -274,21 +274,29 @@ transform: translate(-50%, -50%);
         n.dx += (n.initialDx - n.dx) * 0.01;
         n.dy += (n.initialDy - n.dy) * 0.01;
 
-        if (n.x < 10 || n.x > width - 10) {
-  n.dx *= -1;
-  n.dx += (Math.random() - 0.5) * 2;
-  n.dy += (Math.random() - 0.5) * 2;
+        if (n.x < 10) {
+  n.x = 10;
+  n.dx = Math.abs(n.dx) + Math.random();
+  n.targetRadius = n.radius + 4;
+} else if (n.x > width - 10) {
+  n.x = width - 10;
+  n.dx = -Math.abs(n.dx) - Math.random();
   n.targetRadius = n.radius + 4;
 }
-if (n.y < 10 || n.y > height - 10) {
-  n.dy *= -1;
-  n.dx += (Math.random() - 0.5) * 2;
-  n.dy += (Math.random() - 0.5) * 2;
+}
+if (n.y < 10) {
+  n.y = 10;
+  n.dy = Math.abs(n.dy) + Math.random();
   n.targetRadius = n.radius + 4;
+} else if (n.y > height - 10) {
+  n.y = height - 10;
+  n.dy = -Math.abs(n.dy) - Math.random();
+  n.targetRadius = n.radius + 4;
+}
 }
       });
 
-
+      // Получаем границы всех ссылок навигации
 const navLinks = document.querySelectorAll('.nav a');
 const linkRects = Array.from(navLinks).map(link => link.getBoundingClientRect());
 
@@ -298,7 +306,7 @@ nodes.forEach((n, index) => {
       n.x > rect.left && n.x < rect.right &&
       n.y > rect.top && n.y < rect.bottom
     ) {
-
+      // отскок от кнопки
       const cx = (rect.left + rect.right) / 2;
       const cy = (rect.top + rect.bottom) / 2;
       const dx = n.x - cx;
