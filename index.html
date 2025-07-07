@@ -55,7 +55,7 @@
     let width = canvas.width = window.innerWidth;
     let height = canvas.height = window.innerHeight;
 
-    const nodeCount = 200;
+    const nodeCount = 100;
     let nodes = [];
     let connections = [];
     let hoveredNodeIndex = null;
@@ -273,8 +273,18 @@
         n.dx += (n.initialDx - n.dx) * 0.01;
         n.dy += (n.initialDy - n.dy) * 0.01;
 
-        if (n.x < 0 || n.x > width) n.dx *= -1;
-        if (n.y < 0 || n.y > height) n.dy *= -1;
+        if (n.x < 0 || n.x > width) {
+  n.dx *= -1;
+  n.dx += (Math.random() - 0.5) * 2;
+  n.dy += (Math.random() - 0.5) * 2;
+  n.targetRadius = n.radius + 4;
+}
+if (n.y < 0 || n.y > height) {
+  n.dy *= -1;
+  n.dx += (Math.random() - 0.5) * 2;
+  n.dy += (Math.random() - 0.5) * 2;
+  n.targetRadius = n.radius + 4;
+}
       });
 
       requestAnimationFrame(draw);
