@@ -287,7 +287,31 @@ if (n.y < 0 || n.y > height) {
 }
       });
 
-      requestAnimationFrame(draw);
+      // Получаем границы всех ссылок навигации
+const navLinks = document.querySelectorAll('.nav a');
+const linkRects = Array.from(navLinks).map(link => link.getBoundingClientRect());
+
+nodes.forEach((n, index) => {
+  linkRects.forEach(rect => {
+    if (
+      n.x > rect.left && n.x < rect.right &&
+      n.y > rect.top && n.y < rect.bottom
+    ) {
+      // отскок от кнопки
+      const cx = (rect.left + rect.right) / 2;
+      const cy = (rect.top + rect.bottom) / 2;
+      const dx = n.x - cx;
+      const dy = n.y - cy;
+      const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+      const force = 2;
+      n.dx += (dx / dist) * force;
+      n.dy += (dy / dist) * force;
+      n.targetRadius = n.radius + 4;
+    }
+  });
+});
+
+requestAnimationFrame(draw);
     }
 
     createNodes();
