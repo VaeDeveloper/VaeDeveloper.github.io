@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Caesar Cipher Puzzle with Hints</title>
+<title>Caesar Cipher Puzzle with Contact Links</title>
 <style>
   body {
     background: #1e1e1e;
@@ -11,10 +11,24 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     height: 100vh;
     margin: 0;
     user-select: none;
+    padding-top: 20px;
+  }
+  .contacts {
+    margin-bottom: 20px;
+    font-size: 1em;
+  }
+  .contacts a {
+    color: #00cccc;
+    margin: 0 15px;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .contacts a:hover {
+    text-decoration: underline;
   }
   .container {
     background: #2d2d2d;
@@ -77,9 +91,28 @@
     color: #888;
     min-height: 3em;
   }
+  #bonus-links {
+    margin-top: 25px;
+    font-size: 1em;
+  }
+  #bonus-links a {
+    color: #66ffcc;
+    margin: 0 12px;
+    text-decoration: none;
+    font-weight: 700;
+  }
+  #bonus-links a:hover {
+    text-decoration: underline;
+  }
 </style>
 </head>
 <body>
+  <div class="contacts">
+    <a href="mailto:youremail@example.com" target="_blank" rel="noopener noreferrer">Email</a>
+    <a href="https://youtube.com/yourchannel" target="_blank" rel="noopener noreferrer">YouTube</a>
+    <a href="https://twitter.com/yourhandle" target="_blank" rel="noopener noreferrer">Twitter</a>
+  </div>
+
   <div class="container">
     <h1>Caesar Cipher Puzzle</h1>
     <p>Decrypt the message by entering the correct shift key (a number from 1 to 25):</p>
@@ -90,6 +123,12 @@
     <div class="message" id="resultMessage"></div>
     <div class="decrypted" id="decryptedText"></div>
     <div id="hint"></div>
+    <div id="bonus-links" style="display:none;">
+      <p>Congrats! Here are more ways to connect:</p>
+      <a href="https://linkedin.com/in/yourprofile" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      <a href="https://github.com/yourgithub" target="_blank" rel="noopener noreferrer">GitHub</a>
+      <a href="https://discord.gg/yourdiscord" target="_blank" rel="noopener noreferrer">Discord</a>
+    </div>
   </div>
 
   <script>
@@ -117,6 +156,7 @@
     const resultMessage = document.getElementById('resultMessage');
     const decryptedText = document.getElementById('decryptedText');
     const hintElem = document.getElementById('hint');
+    const bonusLinks = document.getElementById('bonus-links');
 
     let attempts = 0;
 
@@ -140,6 +180,7 @@
         resultMessage.textContent = "Please enter a number from 1 to 25.";
         decryptedText.textContent = "";
         hintElem.textContent = "";
+        bonusLinks.style.display = "none";
         return;
       }
 
@@ -147,9 +188,11 @@
         resultMessage.textContent = "Correct! The decrypted message is:";
         decryptedText.textContent = caesarShift(encryptedText, -userKey);
         hintElem.textContent = "";
+        bonusLinks.style.display = "block";
       } else {
         resultMessage.textContent = "Incorrect key. Try again.";
         decryptedText.textContent = "";
+        bonusLinks.style.display = "none";
         // Show hints progressively (max last hint)
         const hintIndex = Math.min(attempts - 1, hints.length - 1);
         hintElem.textContent = "Hint: " + hints[hintIndex];
