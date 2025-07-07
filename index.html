@@ -52,10 +52,10 @@ transform: translate(-50%, -50%);
   <script>
     const canvas = document.getElementById("graph");
     const ctx = canvas.getContext("2d");
-    let width = canvas.width = window.innerWidth;
-    let height = canvas.height = window.innerHeight;
+    let width = canvas.width = window.innerWidth - 100;
+    let height = canvas.height = window.innerHeight - 100;
 
-    const nodeCount = 100;
+    const nodeCount = 150;
     let nodes = [];
     let connections = [];
     let hoveredNodeIndex = null;
