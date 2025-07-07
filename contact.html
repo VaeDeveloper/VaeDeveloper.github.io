@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Caesar Cipher Puzzle</title>
+<title>Caesar Cipher Puzzle with Hints</title>
 <style>
   body {
     background: #1e1e1e;
@@ -71,6 +71,12 @@
     margin-top: 10px;
     font-family: monospace, monospace;
   }
+  #hint {
+    margin-top: 20px;
+    font-style: italic;
+    color: #888;
+    min-height: 3em;
+  }
 </style>
 </head>
 <body>
@@ -83,23 +89,13 @@
     <button id="decryptBtn">Decrypt</button>
     <div class="message" id="resultMessage"></div>
     <div class="decrypted" id="decryptedText"></div>
+    <div id="hint"></div>
   </div>
 
   <script>
-    // Hidden shift key
-    const secretKey = 7;
-    // Encrypted message contains a "hacker-style" text inviting to connect on GitHub
-    const originalText = `4A6F696E2074686520667265616B7320616E6420656E74657220746865206E6574776F726B2E
-4B65793A20436F6E74616374206D652061742068747470733A2F2F6769746875622E636F6D2F566165446576656C6F706572`;
+    const secretKey = 7; // hidden shift key
+    const originalText = "HELLO, VaeDeveloper! THIS IS A CAESAR CIPHER PUZZLE.";
 
-    // Helper: convert hex string to ascii text
-    function hexToAscii(hex) {
-      return hex.replace(/\s+/g, '').match(/.{1,2}/g)
-        .map(byte => String.fromCharCode(parseInt(byte, 16)))
-        .join('');
-    }
-
-    // Caesar cipher function (positive shift encrypts, negative decrypts)
     function caesarShift(str, shift) {
       return str.split('').map(char => {
         const code = char.charCodeAt(0);
@@ -113,29 +109,50 @@
       }).join('');
     }
 
-    // Convert hex to ascii, then encrypt with Caesar cipher
-    const asciiText = hexToAscii(originalText);
-    const encryptedText = caesarShift(asciiText, secretKey);
+    const encryptedText = caesarShift(originalText, secretKey);
     document.getElementById('encrypted').textContent = encryptedText;
 
     const decryptBtn = document.getElementById('decryptBtn');
     const keyInput = document.getElementById('keyInput');
     const resultMessage = document.getElementById('resultMessage');
     const decryptedText = document.getElementById('decryptedText');
+    const hintElem = document.getElementById('hint');
+
+    let attempts = 0;
+
+    const hints = [
+      "The cipher shifts letters by the same number each time.",
+      "Try the number 7 as your key.",
+      "Each letter is shifted by 7 places in the alphabet.",
+      "To decrypt, shift letters backwards by 7.",
+      "Key is less than 10 and more than 5.",
+      "The key is a prime number.",
+      "The key divides 21 (3 × 7).",
+      "The key is the number of days in a week.",
+      "Shift = 7 = 2³ - 1."
+    ];
 
     decryptBtn.onclick = () => {
       const userKey = parseInt(keyInput.value, 10);
+      attempts++;
+
       if (isNaN(userKey) || userKey < 1 || userKey > 25) {
         resultMessage.textContent = "Please enter a number from 1 to 25.";
         decryptedText.textContent = "";
+        hintElem.textContent = "";
         return;
       }
+
       if (userKey === secretKey) {
         resultMessage.textContent = "Correct! The decrypted message is:";
         decryptedText.textContent = caesarShift(encryptedText, -userKey);
+        hintElem.textContent = "";
       } else {
         resultMessage.textContent = "Incorrect key. Try again.";
         decryptedText.textContent = "";
+        // Show hints progressively (max last hint)
+        const hintIndex = Math.min(attempts - 1, hints.length - 1);
+        hintElem.textContent = "Hint: " + hints[hintIndex];
       }
     };
   </script>
