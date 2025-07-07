@@ -116,6 +116,22 @@
       }
     });
 
+    canvas.addEventListener("mousedown", e => {
+      const rect = canvas.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+
+      nodes.forEach(n => {
+        const dx = n.x - mx;
+        const dy = n.y - my;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const impulse = Math.max(0, 1 - dist / 150);
+        const angle = Math.atan2(dy, dx);
+        n.dx += Math.cos(angle) * impulse * 1.5;
+        n.dy += Math.sin(angle) * impulse * 1.5;
+      });
+    });
+
     createNodes();
     createConnections();
 
