@@ -24,13 +24,24 @@
     box-sizing: border-box;
   }
 
+  /* Контейнер для табов и арта */
   .tabs-wrapper {
     position: fixed;
-    top: 90px;
+    top: 140px; /* Выровнять по верху с NoiseGenerator */
     left: 15%;
     transform: translateX(-50%);
     width: 260px;
     z-index: 20;
+  }
+
+  /* Канвас - убираем свечение */
+  #art-container {
+    width: 260px;
+    height: 260px;
+    background-color: #222;
+    border-radius: 0;
+    box-shadow: none; /* убрал свечение */
+    user-select: none;
   }
 
   .tabs {
@@ -60,15 +71,6 @@
     color: #00cccc;
     box-shadow: 0 0 10px #00cccc;
     border-color: #00cccc;
-  }
-
-  #art-container {
-    width: 260px;
-    height: 260px;
-    background-color: #222;
-    border-radius: 0;
-    box-shadow: 0 0 15px rgba(0, 204, 204, 0.3);
-    user-select: none;
   }
 
   .grid {
