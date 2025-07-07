@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>VaeDeveloper</title>
+  <title>VaeDeveloper — Logic Graph</title>
   <style>
     html, body {
       margin: 0;
@@ -16,78 +16,83 @@
       position: absolute;
       top: 0;
       left: 0;
-      z-index: 0;
-    }
-    .overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
-      pointer-events: none;
-    }
-    .shape-button {
-      position: absolute;
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      background-color: white;
-      top: 60px;
-      left: 60px;
-      cursor: pointer;
-      pointer-events: auto;
-      transition: background-color 0.2s;
-    }
-    .shape-button:hover {
-      background-color: #cccccc;
     }
   </style>
 </head>
 <body>
-  <canvas id="wave"></canvas>
-  <div class="overlay">
-    <a href="projects.html" class="shape-button"></a>
-  </div>
+  <canvas id="graph"></canvas>
 
   <script>
-    const canvas = document.getElementById("wave");
+    const canvas = document.getElementById("graph");
     const ctx = canvas.getContext("2d");
-    let width, height;
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
 
-    function resize() {
+    window.addEventListener('resize', () => {
       width = canvas.width = window.innerWidth;
       height = canvas.height = window.innerHeight;
+    });
+
+    const nodes = [];
+    const connections = [];
+    const nodeCount = 50;
+
+    for (let i = 0; i < nodeCount; i++) {
+      nodes.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        radius: 3 + Math.random() * 2
+      });
     }
 
-    window.addEventListener("resize", resize);
-    resize();
-
-    const lines = 40;
-
-    function draw(time) {
-      ctx.clearRect(0, 0, width, height);
-      ctx.strokeStyle = "white";
-      ctx.lineWidth = 1;
-
-      for (let i = 0; i < lines; i++) {
-        ctx.beginPath();
-        const baseAmp = height * 0.4; // увеличиваем амплитуду до 80% от высоты
-        const amp = baseAmp * (0.3 + Math.sin(i + time * 0.001) * 0.7);
-        const freq = 0.002 + (i % 4) * 0.0015;
-
-        for (let x = 0; x < width; x += 4) {
-          const y = height / 2 + Math.sin(x * freq + time * 0.001 + i) * amp;
-          if (x === 0) ctx.moveTo(x, y);
-          else ctx.lineTo(x, y);
+    // Randomly connect nodes
+    for (let i = 0; i < nodeCount; i++) {
+      for (let j = i + 1; j < nodeCount; j++) {
+        if (Math.random() < 0.05) {
+          connections.push([i, j]);
         }
-        ctx.stroke();
       }
+    }
+
+    function draw() {
+      ctx.fillStyle = "#0d0d0d";
+      ctx.fillRect(0, 0, width, height);
+
+      // Draw connections
+      ctx.strokeStyle = "#00ffff33";
+      ctx.lineWidth = 1;
+      connections.forEach(([i, j]) => {
+        const a = nodes[i];
+        const b = nodes[j];
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.stroke();
+      });
+
+      // Draw nodes
+      nodes.forEach(n => {
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
+        ctx.fillStyle = "#00ffff";
+        ctx.fill();
+      });
+
+      // Update node positions (slight floating)
+      nodes.forEach(n => {
+        n.x += n.vx;
+        n.y += n.vy;
+
+        if (n.x < 0 || n.x > width) n.vx *= -1;
+        if (n.y < 0 || n.y > height) n.vy *= -1;
+      });
 
       requestAnimationFrame(draw);
     }
 
-    draw(0);
+    draw();
   </script>
 </body>
-</
+</html>
