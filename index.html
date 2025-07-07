@@ -352,7 +352,7 @@
     }
 
     let iterations = 0;
-    const maxIterations = 15;
+    const maxIterations = 10;
 
     function frame() {
       if (!animationRunning) return;
@@ -360,7 +360,7 @@
         displayText[i] = randomChar();
         signature.textContent = displayText.join('');
         iterations++;
-        setTimeout(frame, 50);
+        setTimeout(frame, 30);
       } else {
         displayText[i] = signatureText[i];
         signature.textContent = displayText.join('');
