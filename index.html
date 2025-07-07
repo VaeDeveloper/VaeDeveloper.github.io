@@ -55,18 +55,16 @@
     let width = canvas.width = window.innerWidth;
     let height = canvas.height = window.innerHeight;
 
-    window.addEventListener('resize', () => {
-  width = canvas.width = window.innerWidth;
-  height = canvas.height = window.innerHeight;
-  createConnections();
-});
-
-
-
-    const nodeCount = 120;
+    const nodeCount = 100;
     let nodes = [];
     let connections = [];
     let hoveredNodeIndex = null;
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+      createConnections();
+    });
 
     function createNodes() {
       nodes = [];
@@ -76,8 +74,8 @@
         nodes.push({
           x: Math.random() * width,
           y: Math.random() * height,
-          dx: dx,
-          dy: dy,
+          dx,
+          dy,
           initialDx: dx,
           initialDy: dy,
           radius: 2 + Math.random() * 2,
@@ -90,7 +88,6 @@
     function createConnections() {
       connections = [];
       nodes.forEach(n => n.hasConnection = false);
-
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
           const dx = nodes[i].x - nodes[j].x;
@@ -109,7 +106,6 @@
       const rect = canvas.getBoundingClientRect();
       const mx = e.clientX - rect.left;
       const my = e.clientY - rect.top;
-
       hoveredNodeIndex = null;
       for (let i = 0; i < nodes.length; i++) {
         const n = nodes[i];
@@ -128,6 +124,20 @@
       const mx = e.clientX - rect.left;
       const my = e.clientY - rect.top;
 
+      // удалить узел при клике прямо на него
+      for (let i = 0; i < nodes.length; i++) {
+        const n = nodes[i];
+        const dx = mx - n.x;
+        const dy = my - n.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < n.radius) {
+          nodes.splice(i, 1);
+          createConnections();
+          return;
+        }
+      }
+
+      // импульс от курсора
       nodes.forEach(n => {
         const dx = n.x - mx;
         const dy = n.y - my;
@@ -136,12 +146,9 @@
         const angle = Math.atan2(dy, dx);
         n.dx += Math.cos(angle) * impulse * 1.5;
         n.dy += Math.sin(angle) * impulse * 1.5;
-        n.targetRadius = n.radius + impulse * 5; // scale up temporarily
+        n.targetRadius = n.radius + impulse * 5;
       });
     });
-
-    createNodes();
-    createConnections();
 
     function applyNodeCollisions() {
       for (let i = 0; i < nodes.length; i++) {
@@ -152,7 +159,6 @@
           const dy = b.y - a.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
           const minDist = a.radius + b.radius + 4;
-
           if (dist < minDist && dist > 0) {
             const overlap = (minDist - dist) / 2;
             const nx = dx / dist;
@@ -161,7 +167,6 @@
             a.y -= ny * overlap;
             b.x += nx * overlap;
             b.y += ny * overlap;
-
             const damping = 0.05;
             const ax = nx * damping;
             const ay = ny * damping;
@@ -175,7 +180,6 @@
     }
 
     function draw() {
-
       ctx.fillStyle = "#111111";
       ctx.fillRect(0, 0, width, height);
 
@@ -212,7 +216,6 @@
 
         n.x += n.dx;
         n.y += n.dy;
-
         n.dx += (n.initialDx - n.dx) * 0.01;
         n.dy += (n.initialDy - n.dy) * 0.01;
 
@@ -223,6 +226,8 @@
       requestAnimationFrame(draw);
     }
 
+    createNodes();
+    createConnections();
     draw();
   </script>
 </body>
