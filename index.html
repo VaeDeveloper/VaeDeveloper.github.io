@@ -63,7 +63,7 @@
 
 
 
-    const nodeCount = 200;
+    const nodeCount = 100;
     let nodes = [];
     let connections = [];
     let hoveredNodeIndex = null;
@@ -175,7 +175,6 @@
     }
 
     function draw() {
-      applyNodeAttraction();
 
       ctx.fillStyle = "#111111";
       ctx.fillRect(0, 0, width, height);
