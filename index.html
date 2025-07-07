@@ -69,11 +69,15 @@
     function createNodes() {
       nodes = [];
       for (let i = 0; i < nodeCount; i++) {
+        const dx = (Math.random() - 0.5) * 0.3;
+        const dy = (Math.random() - 0.5) * 0.3;
         nodes.push({
           x: Math.random() * width,
           y: Math.random() * height,
-          dx: (Math.random() - 0.5) * 0.3,
-          dy: (Math.random() - 0.5) * 0.3,
+          dx: dx,
+          dy: dy,
+          initialDx: dx,
+          initialDy: dy,
           radius: 2 + Math.random() * 2,
           hasConnection: false
         });
@@ -135,6 +139,37 @@
     createNodes();
     createConnections();
 
+    function applyNodeCollisions() {
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const a = nodes[i];
+          const b = nodes[j];
+          const dx = b.x - a.x;
+          const dy = b.y - a.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          const minDist = a.radius + b.radius + 4;
+
+          if (dist < minDist && dist > 0) {
+            const overlap = (minDist - dist) / 2;
+            const nx = dx / dist;
+            const ny = dy / dist;
+            a.x -= nx * overlap;
+            a.y -= ny * overlap;
+            b.x += nx * overlap;
+            b.y += ny * overlap;
+
+            const damping = 0.05;
+            const ax = nx * damping;
+            const ay = ny * damping;
+            a.dx -= ax;
+            a.dy -= ay;
+            b.dx += ax;
+            b.dy += ay;
+          }
+        }
+      }
+    }
+
     function draw() {
       ctx.fillStyle = "#1a1a1a";
       ctx.fillRect(0, 0, width, height);
@@ -150,6 +185,8 @@
         ctx.stroke();
       });
 
+      applyNodeCollisions();
+
       nodes.forEach((n, index) => {
         if (!n.hasConnection) return;
         ctx.beginPath();
@@ -159,6 +196,10 @@
 
         n.x += n.dx;
         n.y += n.dy;
+
+        // Gradual return to original velocity
+        n.dx += (n.initialDx - n.dx) * 0.01;
+        n.dy += (n.initialDy - n.dy) * 0.01;
 
         if (n.x < 0 || n.x > width) n.dx *= -1;
         if (n.y < 0 || n.y > height) n.dy *= -1;
