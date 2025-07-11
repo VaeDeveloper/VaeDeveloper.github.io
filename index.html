@@ -26,7 +26,7 @@
     transition: margin 0.3s ease;
   }
 
-  /* Контейнер для табов и арта */
+
   .tabs-wrapper {
     position: fixed;
     top: 180px;
@@ -41,7 +41,7 @@
     transition: all 0.3s ease;
   }
 
-  /* Канвас - фон как у страницы, плюс свечение при наведении */
+
   #art-container {
     width: 260px;
     height: 260px;
@@ -178,7 +178,7 @@
     margin: 0 auto;
   }
 
-  /* Подпись внизу слева, по умолчанию скрыта */
+ 
   #signature {
     position: fixed;
     bottom: 20px;
@@ -196,7 +196,7 @@
     z-index: 30;
   }
 
-  /* Мобильная адаптация */
+
   @media (max-width: 768px) {
     .tabs-wrapper {
       top: 20px !important;
@@ -217,11 +217,11 @@
     }
 
     #art-container {
-      display: none !important; /* скрываем арт */
+      display: none !important;
     }
 
     .container {
-      margin-top: 20px !important; /* уменьшенный отступ сверху */
+      margin-top: 20px !important; 
       padding: 20px 15px 80px !important;
       min-height: auto;
       transition: margin 0.3s ease;
@@ -295,11 +295,21 @@
 
     <section id="bio" class="content hidden" role="tabpanel" tabindex="0" aria-labelledby="bio">
       <h2>About Me</h2>
-      <p>Hello! I'm VaeDeveloper, a passionate developer specialized in C++ and Unreal Engine tools. I love creating helpful and powerful editor utilities, plugins, and interactive applications.</p>
+      <p>
+        Hello! I'm <strong>Dmitry Alexandrov</strong> (aka <strong>VaeDeveloper</strong>) — a developer focused on creating powerful tools and systems for <strong>Unreal Engine 5</strong> and native <strong>C++</strong> applications.<br><br>
+
+        My main strengths are in building editor extensions using <strong>Slate</strong>, developing tools for <strong>project and content management</strong>, validation, performance visualization, and custom UX panels inside the Unreal Editor.<br><br>
+
+        I also create standalone C++ desktop applications using <strong>OpenGL + ImGui</strong> — from procedural texture generators to asset pipeline utilities.<br><br>
+
+        I'm passionate about designing flexible, developer-friendly solutions that streamline workflows and help technical teams build faster and smarter.
+  </p>
       <h3>Contact</h3>
-      <p>Email: <a href="mailto:youremail@example.com" style="color:#00cccc;">youremail@example.com</a></p>
+      <p>Email: <a href="mailto:dlcshopvorkuta@gmail.com" style="color:#00cccc;">dlcshopvorkuta@gmail.com</a></p>
       <p>GitHub: <a href="https://github.com/VaeDeveloper" target="_blank" rel="noopener noreferrer" style="color:#00cccc;">https://github.com/VaeDeveloper</a></p>
+      <p>YouTube: <a href="https://www.youtube.com/@0xtoolset" style="color:#00cccc;">@0xtoolset</a></p>
       <p>Reddit: <a href="https://www.reddit.com/user/dalexdeb/submitted/" target="_blank" rel="noopener noreferrer" style="color:#00cccc;">https://www.reddit.com/user/dalexdeb/submitted/</a></p>
+      <p>Telegram: <a href="https://t.me/xToolset" style="color:#00cccc;">@xToolset</a></p>
     </section>
   </main>
 
@@ -342,7 +352,7 @@
     });
   });
 
-  // Генеративный арт с рандомными линиями в круге
+
   const canvas = document.getElementById('generative-art');
   const ctx = canvas.getContext('2d');
   const W = canvas.width;
@@ -392,7 +402,7 @@
     drawArt();
   });
 
-  // Анимация подписи
+
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   const signatureText = "0xToolset";
 
